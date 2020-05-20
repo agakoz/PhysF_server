@@ -44,6 +44,12 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+		<dependency>
+			<groupId>com.microsoft.sqlserver</groupId>
+			<artifactId>mssql-jdbc</artifactId>
+			<version>8.3.0.jre14-preview</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
