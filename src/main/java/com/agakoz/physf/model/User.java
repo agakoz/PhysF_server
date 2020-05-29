@@ -6,29 +6,39 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Data
-@RequiredArgsConstructor
 @NoArgsConstructor
+@RequiredArgsConstructor
 @Table(name = "users")
 public class User {
 
     @Id
-    @Column
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column
     @NonNull
-    long id;
+    int id;
 
-    @Column(nullable = false, length = 255)
+    @Column
     @NonNull
-    private String username;
+    String name;
 
+    @Column
     @NonNull
-    @Column(nullable = false, length = 255)
-    private String password;
+    String surname;
 
+    @Column
     @NonNull
-    @Column(nullable = false, length = 255)
-    private String role;
+    String companyName;
+
+    @ManyToOne
+    @JoinColumn(name = "account_id", referencedColumnName = "id", nullable = false)
+    private Account account;
+
+    @Column(name="birth_date")
+    @NonNull
+    Date birthDate;
+
 }
