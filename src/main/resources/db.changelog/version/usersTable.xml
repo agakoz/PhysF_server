@@ -6,14 +6,21 @@
         http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
     <changeSet id="2" author="agakoz">
+
         <createTable tableName="users">
             <column name="id" type="int" generationType="identity"/>
             <column name="account_id" type="int"/>
             <column name="name" type="varchar(255)"/>
             <column name="surname" type="varchar(255)"/>
             <column name="company" type="varchar(255)"/>
-            <column name="email" type="varchar(320)"/>
+            <column name="address" type="varchar(255)"/>
+            <column name="city" type="varchar(50)"/>
+            <column name="licence_number" type="varchar(50)"/>
+            <column name="specializations" type="varchar(255)"/>
+            <column name="professional_title" type="varchar(255)"/>
             <column name="birth_date" type="date"/>
+            <column name="email" type="varchar(320)"/>
+
         </createTable>
 
         <addNotNullConstraint tableName="users" columnName="id" columnDataType="int"/>
@@ -21,13 +28,22 @@
         <addNotNullConstraint tableName="users" columnName="name" columnDataType="varchar(255)"/>
         <addNotNullConstraint tableName="users" columnName="surname" columnDataType="varchar(255)"/>
         <addNotNullConstraint tableName="users" columnName="company" columnDataType="varchar(255)"/>
-        <addNotNullConstraint tableName="users" columnName="email" columnDataType="varchar(320)"/>
+        <addNotNullConstraint tableName="users" columnName="company" columnDataType="varchar(255)"/>
+        <addNotNullConstraint tableName="users" columnName="address" columnDataType="varchar(255)"/>
+        <addNotNullConstraint tableName="users" columnName="city" columnDataType="varchar(50)"/>
+        <addNotNullConstraint tableName="users" columnName="licence_number" columnDataType="varchar(255)"/>
+        <addNotNullConstraint tableName="users" columnName="specializations" columnDataType="varchar(255)"/>
+        <addNotNullConstraint tableName="users" columnName="professional_title" columnDataType="varchar(255)"/>
         <addNotNullConstraint tableName="users" columnName="birth_date" columnDataType="date"/>
+        <addNotNullConstraint tableName="users" columnName="email" columnDataType="varchar(320)"/>
 
 
         <addPrimaryKey tableName="users" columnNames="id"/>
         <addForeignKeyConstraint baseTableName="users" baseColumnNames="account_id" constraintName="fk_users_account"
                                  referencedTableName="accounts" referencedColumnNames="id"/>
+
+        <addUniqueConstraint tableName="users" columnNames="account_id"/>
+        <addUniqueConstraint tableName="users" columnNames="licence_number"/>
         <addUniqueConstraint tableName="users" columnNames="email"/>
     </changeSet>
 </databaseChangeLog>

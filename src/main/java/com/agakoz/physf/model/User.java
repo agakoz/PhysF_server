@@ -33,7 +33,7 @@ public class User {
     @NonNull
     String companyName;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "account_id", referencedColumnName = "id", nullable = false)
     private Account account;
 

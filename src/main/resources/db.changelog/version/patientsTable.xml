@@ -1,0 +1,55 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet id="3" author="agakoz">
+        <createTable tableName="patients">
+            <column name="id" type="int" generationType="identity"/>
+            <column name="user_id" type="int"/>
+            <!--     contact-->
+            <column name="name" type="varchar(255)"/>
+            <column name="surname" type="varchar(255)"/>
+            <column name="birth_date" type="date"/>
+            <column name="pesel" type="varchar(12)"/>
+            <column name="sex" type="char(1)"/>
+            <column name="address" type="varchar(255)"/>
+            <column name="city" type="varchar(50)"/>
+            <column name="email" type="varchar(320)"/>
+            <column name="phone" type="varchar(9)"/>
+            <column name="lifestyle" type="varchar(255)"/>
+            <column name="profession" type="varchar(255)"/>
+            <column name="guardian_info" type="varchar(255)"/>
+            <!--    health-->
+            <column name="past_diseases" type="varchar(255)"/>
+            <column name="chronic_diseases" type="varchar(255)"/>
+            <column name="hospitalization" type="varchar(255)"/>
+            <column name="surgeries" type="varchar(255)"/>
+            <column name="past_treatment" type="varchar(255)"/>
+            <column name="allergies" type="varchar(255)"/>
+            <column name="family_diseases" type="varchar(255)"/>
+            <column name="medical_certificate" type="varchar(255)"/>
+            <column name="extra_details" type="varchar(255)"/>
+        </createTable>
+
+
+        <addNotNullConstraint tableName="patients" columnName="id" columnDataType="int"/>
+        <addNotNullConstraint tableName="patients" columnName="user_id" columnDataType="int"/>
+        <addNotNullConstraint tableName="patients" columnName="name" columnDataType="varchar(255)"/>
+        <addNotNullConstraint tableName="patients" columnName="surname" columnDataType="varchar(255)"/>
+        <addNotNullConstraint tableName="patients" columnName="birth_date" columnDataType="date"/>
+        <addNotNullConstraint tableName="patients" columnName="pesel" columnDataType="varchar(12)"/>
+        <addNotNullConstraint tableName="patients" columnName="sex" columnDataType="char(1)"/>
+        <addNotNullConstraint tableName="patients" columnName="address" columnDataType="varchar(255)"/>
+        <addNotNullConstraint tableName="patients" columnName="city" columnDataType="varchar(50)"/>
+
+        <addPrimaryKey tableName="patients" columnNames="id"/>
+        <addForeignKeyConstraint baseTableName="patients" baseColumnNames="user_id" constraintName="fk_patients_user"
+                                 referencedTableName="users" referencedColumnNames="id"/>
+
+        <addUniqueConstraint tableName="patients" columnNames="pesel"/>
+
+    </changeSet>
+</databaseChangeLog>
