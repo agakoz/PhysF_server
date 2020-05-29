@@ -5,11 +5,13 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd
         http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
-    <changeSet id="2" author="agakoz">
+    <changeSet id="1" author="agakoz">
 
         <createTable tableName="users">
             <column name="id" type="int" generationType="identity"/>
-            <column name="account_id" type="int"/>
+            <column name="username" type="varchar(255)"/>
+            <column name="password" type="varchar(255)"/>
+            <column name="role" type="varchar(255)"/>
             <column name="name" type="varchar(255)"/>
             <column name="surname" type="varchar(255)"/>
             <column name="company" type="varchar(255)"/>
@@ -24,7 +26,6 @@
         </createTable>
 
         <addNotNullConstraint tableName="users" columnName="id" columnDataType="int"/>
-        <addNotNullConstraint tableName="users" columnName="account_id" columnDataType="int"/>
         <addNotNullConstraint tableName="users" columnName="name" columnDataType="varchar(255)"/>
         <addNotNullConstraint tableName="users" columnName="surname" columnDataType="varchar(255)"/>
         <addNotNullConstraint tableName="users" columnName="company" columnDataType="varchar(255)"/>
@@ -36,13 +37,13 @@
         <addNotNullConstraint tableName="users" columnName="professional_title" columnDataType="varchar(255)"/>
         <addNotNullConstraint tableName="users" columnName="birth_date" columnDataType="date"/>
         <addNotNullConstraint tableName="users" columnName="email" columnDataType="varchar(320)"/>
-
+        <addNotNullConstraint tableName="users" columnName="username" columnDataType="varchar(255)"/>
+        <addNotNullConstraint tableName="users" columnName="password" columnDataType="varchar(255)"/>
+        <addNotNullConstraint tableName="users" columnName="role" columnDataType="varchar(255)"/>
 
         <addPrimaryKey tableName="users" columnNames="id"/>
-        <addForeignKeyConstraint baseTableName="users" baseColumnNames="account_id" constraintName="fk_users_account"
-                                 referencedTableName="accounts" referencedColumnNames="id"/>
 
-        <addUniqueConstraint tableName="users" columnNames="account_id"/>
+        <addUniqueConstraint tableName="users" columnNames="username"/>
         <addUniqueConstraint tableName="users" columnNames="licence_number"/>
         <addUniqueConstraint tableName="users" columnNames="email"/>
     </changeSet>

@@ -5,7 +5,7 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd
         http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
-    <changeSet id="6" author="agakoz">
+    <changeSet id="5" author="agakoz">
         <createTable tableName="question_groups">
             <column name="id" type="int" generationType="identity"/>
             <column name="user_id" type="int"/>

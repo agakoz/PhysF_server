@@ -33,9 +33,17 @@ public class User {
     @NonNull
     String companyName;
 
-    @OneToOne
-    @JoinColumn(name = "account_id", referencedColumnName = "id", nullable = false)
-    private Account account;
+    @Column(nullable = false, length = 255)
+    @NonNull
+    private String username;
+
+    @NonNull
+    @Column(nullable = false, length = 255)
+    private String password;
+
+    @NonNull
+    @Column(nullable = false, length = 255)
+    private String role;
 
     @Column(name="birth_date")
     @NonNull
