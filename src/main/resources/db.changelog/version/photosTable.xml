@@ -1,0 +1,26 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet id="5" author="agakoz">
+        <createTable tableName="photos">
+            <column name="id" type="int" generationType="identity"/>
+            <column name="visit_id" type="int"/>
+            <column name="photo" type="varbinary(max)"/>
+            <column name="description" type="varchar(255)"/>
+
+        </createTable>
+
+        <addNotNullConstraint tableName="photos" columnName="id" columnDataType="int"/>
+        <addNotNullConstraint tableName="photos" columnName="visit_id" columnDataType="int"/>
+        <addNotNullConstraint tableName="photos" columnName="photo" columnDataType="varbinary(max)"/>
+
+        <addForeignKeyConstraint baseTableName="photos" baseColumnNames="visit_id" constraintName="fk_photos_visit"
+                                 referencedTableName="visits"  referencedColumnNames="id"/>
+        <addPrimaryKey tableName="photos" columnNames="id"/>
+
+    </changeSet>
+</databaseChangeLog>
