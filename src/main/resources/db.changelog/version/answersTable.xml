@@ -1,0 +1,29 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet id="8" author="agakoz">
+        <createTable tableName="answers">
+            <column name="id" type="int" generationType="identity"/>
+            <column name="patient_id" type="int"/>
+            <column name="question_id" type="int"/>
+            <column name="content" type="varchar(255)"/>
+        </createTable>
+
+        <addNotNullConstraint tableName="answers" columnName="id" columnDataType="int"/>
+        <addNotNullConstraint tableName="answers" columnName="patient_id" columnDataType="int"/>
+        <addNotNullConstraint tableName="answers" columnName="question_id" columnDataType="int"/>
+        <addNotNullConstraint tableName="answers" columnName="content" columnDataType="varchar(255)"/>
+
+        <addPrimaryKey tableName="answers" columnNames="id"/>
+        <addForeignKeyConstraint baseTableName="answers" baseColumnNames="patient_id"
+                                 constraintName="fk_answers_patient"
+                                 referencedTableName="patients" referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="answers" baseColumnNames="question_id"
+                                 constraintName="fk_answers_question"
+                                 referencedTableName="questions" referencedColumnNames="id"/>
+    </changeSet>
+</databaseChangeLog>

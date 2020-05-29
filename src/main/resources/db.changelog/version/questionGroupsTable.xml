@@ -1,0 +1,24 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet id="6" author="agakoz">
+        <createTable tableName="question_groups">
+            <column name="id" type="int" generationType="identity"/>
+            <column name="user_id" type="int"/>
+            <column name="name" type="varchar(50)"/>
+        </createTable>
+
+        <addNotNullConstraint tableName="question_groups" columnName="id" columnDataType="int"/>
+        <addNotNullConstraint tableName="question_groups" columnName="user_id" columnDataType="int"/>
+        <addNotNullConstraint tableName="question_groups" columnName="name" columnDataType="varchar(50)"/>
+
+        <addPrimaryKey tableName="question_groups" columnNames="id"/>
+        <addForeignKeyConstraint baseTableName="question_groups" baseColumnNames="user_id"
+                                 constraintName="fk_question_groups_user"
+                                 referencedTableName="users" referencedColumnNames="id"/>
+    </changeSet>
+</databaseChangeLog>
