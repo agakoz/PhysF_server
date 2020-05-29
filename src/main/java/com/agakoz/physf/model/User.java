@@ -21,18 +21,6 @@ public class User {
     @NonNull
     int id;
 
-    @Column
-    @NonNull
-    String name;
-
-    @Column
-    @NonNull
-    String surname;
-
-    @Column
-    @NonNull
-    String companyName;
-
     @Column(nullable = false, length = 255)
     @NonNull
     private String username;
@@ -45,8 +33,44 @@ public class User {
     @Column(nullable = false, length = 255)
     private String role;
 
+    @Column
+    @NonNull
+    String name;
+
+    @Column
+    @NonNull
+    String surname;
+
+    @Column
+    @NonNull
+    String company;
+
+    @Column
+    @NonNull
+    String address;
+
+    @Column
+    @NonNull
+    String city;
+
+    @Column(name="licence_number", length = 50)
+    @NonNull
+    String licenceNumber;
+
+    @Column
+    @NonNull
+    String specializations;
+
+    @Column(name = "professional_title")
+    @NonNull
+    String professionalTitle;
+
     @Column(name="birth_date")
     @NonNull
     Date birthDate;
+
+    @Column(length = 320)
+    @NonNull
+    String email;
 
 }

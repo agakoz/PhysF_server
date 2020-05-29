@@ -20,10 +20,12 @@ public class Visit {
 
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
+    @NonNull
     private User user;
 
     @ManyToOne
     @JoinColumn(name = "patient_id", referencedColumnName = "id", nullable = false)
+    @NonNull
     private Patient patient;
 
     @NonNull

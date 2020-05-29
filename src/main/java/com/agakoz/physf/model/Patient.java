@@ -64,7 +64,7 @@ public class Patient {
     @Column
     private String profession;
 
-    @Column
+    @Column(name = "guardian_info")
     private String guardian;
 
     @Column(name = "past_diseases")
