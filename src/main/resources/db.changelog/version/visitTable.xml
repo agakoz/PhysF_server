@@ -1,0 +1,35 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet id="4" author="agakoz">
+        <createTable tableName="visits">
+            <column name="id" type="int" generationType="identity"/>
+            <column name="user_id" type="int"/>
+            <column name="patient_id" type="int"/>
+            <column name="date" type="date"/>
+            <column name="reason" type="varchar(255)"/>
+            <column name="symptoms" type="varchar(255)"/>
+            <column name="diagnosis" type="varchar(max)"/>
+            <column name="recommendations" type="varchar(max)"/>
+            <column name="examination_desc" type="varchar(max)"/>
+            <column name="treatment" type="varchar(max)"/>
+            <column name="notes" type="varchar(max)"/>
+
+        </createTable>
+
+        <addNotNullConstraint tableName="visits" columnName="user_id" columnDataType="int"/>
+        <addNotNullConstraint tableName="visits" columnName="patient_id" columnDataType="int"/>
+        <addNotNullConstraint tableName="visits" columnName="id" columnDataType="int"/>
+        <addNotNullConstraint tableName="visits" columnName="date" columnDataType="date"/>
+
+        <addPrimaryKey tableName="visits" columnNames="id"/>
+        <addForeignKeyConstraint baseTableName="visits" baseColumnNames="user_id" constraintName="fk_visits_user"
+                                 referencedTableName="users" referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="visits" baseColumnNames="patient_id" constraintName="fk_visits_patient"
+                                 referencedTableName="patients" referencedColumnNames="id"/>
+    </changeSet>
+</databaseChangeLog>
