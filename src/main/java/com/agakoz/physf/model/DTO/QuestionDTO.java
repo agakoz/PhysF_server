@@ -7,12 +7,8 @@ import lombok.RequiredArgsConstructor;
 
 @Data
 @AllArgsConstructor
-@RequiredArgsConstructor
 public class QuestionDTO {
-    @NonNull
     int id;
-    @NonNull
     private int questionGroupId;
-    @NonNull
     private String content;
 }

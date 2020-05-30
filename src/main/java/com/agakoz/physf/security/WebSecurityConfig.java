@@ -1,0 +1,62 @@
+package com.agakoz.physf.security;
+
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+@Configuration
+@EnableWebSecurity
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Bean
+    public PasswordEncoder getPasswordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    private UserDetailsServiceImpl userDetailsService;
+
+
+    public WebSecurityConfig(UserDetailsServiceImpl userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
+
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userDetailsService);
+    }
+
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+
+//        http.csrf().disable();
+//        http.headers().disable();
+
+//https
+        http.requiresChannel()
+                .anyRequest()
+                .requiresSecure();
+        http.authorizeRequests()
+//                TODO: ROLE
+                .antMatchers("/users/**").hasAuthority("ROLE_USER")
+                .antMatchers("/patients/**").hasAuthority("ROLE_USER")
+                .antMatchers("/incomingVisits/**").hasAuthority("ROLE_USER")
+                .antMatchers("/visits/**").hasAuthority("ROLE_USER")
+                .antMatchers("/incomingVisits/**").hasAuthority("ROLE_USER")
+                .antMatchers("/questionGroups/**").hasAuthority("ROLE_USER");
+
+
+//                .and()
+//                .formLogin().defaultSuccessUrl("/expenses");
+//                .and()
+//                .logout()
+//                .logoutSuccessHandler(new CustomLogoutSuccessHandler())
+//                .invalidateHttpSession(true);
+    }
+}
