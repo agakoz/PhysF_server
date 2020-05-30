@@ -37,43 +37,33 @@ public class User implements UserDetails {
     private String role;
 
     @Column
-    @NonNull
     String name;
 
     @Column
-    @NonNull
     String surname;
 
     @Column
-    @NonNull
     String company;
 
     @Column
-    @NonNull
     String address;
 
     @Column
-    @NonNull
     String city;
 
     @Column(name="licence_number", length = 50)
-    @NonNull
     String licenceNumber;
 
     @Column
-    @NonNull
     String specializations;
 
     @Column(name = "professional_title")
-    @NonNull
     String professionalTitle;
 
     @Column(name="birth_date")
-    @NonNull
     Date birthDate;
 
     @Column(length = 320)
-    @NonNull
     String email;
 
     @Override
