@@ -24,9 +24,5 @@ public class SignUpController {
         return "sign-up";
     }
 
-    @PostMapping("/register")
-    public String register(User user) {
-        userService.createAndAddUser(user);
-        return "redirect:/users/all";
-    }
+
 }
