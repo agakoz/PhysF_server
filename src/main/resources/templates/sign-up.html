@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>SignUp</title>
+
+    <!--    bootstrap-->
+<!--    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">-->
+<!--    <link href="https://getbootstrap.com/docs/4.0/examples/signin/signin.css" rel="stylesheet" crossorigin="anonymous"/>-->
+</head>
+<body style="background-color: #e7e7e7">
+<!--<h1>Zarejestruj się</h1>-->
+
+<div  >
+    <form th:action="@{/register}" method="post" >
+        <h2 >Dodaj konto</h2>
+        <p></p>
+        <label for="username">Nazwa Uzytkownika</label>
+        <input id="username" type="text"  required="" autofocus=""
+               name="username" placeholder="Nazwa uzytkownika">
+
+        <p></p>
+        <label for="password" >Haslo</label>
+        <input type="password" id="password" name="password" placeholder="Haslo" required="">
+        <p></p>
+        <button type="submit">zarejestruj</button>
+        <p></p>
+        <h5 lub jeżeli masz już konto>
+            <a href="#" th:href="@{/login}">zaloguj się!</a></h5>
+    </form>
+</div>
+
+
+
+
+</body>
+</html>

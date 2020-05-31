@@ -7,7 +7,7 @@
 
     <changeSet id="4" author="agakoz">
         <createTable tableName="photos">
-            <column name="id" type="int" generationType="identity"/>
+            <column name="id" type="int" generationType="identity" autoIncrement="true" />
             <column name="visit_id" type="int"/>
             <column name="photo" type="varbinary(max)"/>
             <column name="description" type="varchar(255)"/>

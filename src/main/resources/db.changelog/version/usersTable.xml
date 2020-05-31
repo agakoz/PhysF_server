@@ -8,7 +8,7 @@
     <changeSet id="1" author="agakoz">
 
         <createTable tableName="users">
-            <column name="id" type="int" generationType="identity"/>
+            <column name="id" type="int" generationType="identity" autoIncrement="true" />
             <column name="username" type="varchar(255)"/>
             <column name="password" type="varchar(255)"/>
             <column name="role" type="varchar(255)"/>
@@ -26,11 +26,11 @@
         </createTable>
 
         <addNotNullConstraint tableName="users" columnName="id" columnDataType="int"/>
-        <addNotNullConstraint tableName="users" columnName="name" columnDataType="varchar(255)"/>
         <addNotNullConstraint tableName="users" columnName="username" columnDataType="varchar(255)"/>
         <addNotNullConstraint tableName="users" columnName="password" columnDataType="varchar(255)"/>
         <addNotNullConstraint tableName="users" columnName="role" columnDataType="varchar(255)"/>
 
+<!--        <addNotNullConstraint tableName="users" columnName="name" columnDataType="varchar(255)"/>-->
 <!--        <addNotNullConstraint tableName="users" columnName="surname" columnDataType="varchar(255)"/>-->
 <!--        <addNotNullConstraint tableName="users" columnName="company" columnDataType="varchar(255)"/>-->
 <!--        <addNotNullConstraint tableName="users" columnName="address" columnDataType="varchar(255)"/>-->

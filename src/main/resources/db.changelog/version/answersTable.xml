@@ -7,7 +7,7 @@
 
     <changeSet id="7" author="agakoz">
         <createTable tableName="answers">
-            <column name="id" type="int" generationType="identity"/>
+            <column name="id" type="int" generationType="identity" autoIncrement="true" />
             <column name="patient_id" type="int"/>
             <column name="question_id" type="int"/>
             <column name="content" type="varchar(255)"/>
