@@ -36,10 +36,7 @@ public class UserController {
                     HttpStatus.NOT_FOUND);
         }
     }
-//    @GetMapping("/all")
-//    public List<UserDTO> getAllUsers() {
-//        return userRepository.retrieveAllUserAsDTO();
-//    }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<Object> getAllUsers(@PathVariable int id) {
@@ -70,7 +67,7 @@ public class UserController {
         }
 
         @PostMapping("/register")
-        ResponseEntity<String> register (User user){
+        ResponseEntity<String> register ( User user){
             try {
                 userService.createAndAddUser(user);
                 return new ResponseEntity<>(
@@ -79,9 +76,26 @@ public class UserController {
             } catch (IOException ex) {
                 return new ResponseEntity<>(
                         "Registration failed " + ex.getMessage(),
-                        HttpStatus.CONFLICT);
+                        HttpStatus.NOT_FOUND);
             }
         }
-
-
+//@PostMapping("/register")
+//String register ( User user) throws IOException{
+//
+//        userService.createAndAddUser(user);
+//return "success";
+//}
+        @PutMapping("/{id}")
+    ResponseEntity<String> updateUser(@PathVariable int id,  User user) {
+            try {
+                userService.updateUser(id, user);
+                return new ResponseEntity<>(
+                        "user updated successfully",
+                        HttpStatus.OK);
+            } catch (IOException ex) {
+                return new ResponseEntity<>(
+                        "Update failed! " + ex.getMessage(),
+                        HttpStatus.NOT_FOUND);
+            }
+        }
     }

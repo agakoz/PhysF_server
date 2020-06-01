@@ -42,18 +42,18 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.requiresChannel()
                 .anyRequest()
                 .requiresSecure();
-//        http.authorizeRequests()
+        http.authorizeRequests()
 ////                TODO: ROLE
 //                .antMatchers("/users/**").hasAuthority("ROLE_USER")
-//                .antMatchers("/patients/**").hasAuthority("ROLE_USER")
-//                .antMatchers("/incomingVisits/**").hasAuthority("ROLE_USER")
-//                .antMatchers("/visits/**").hasAuthority("ROLE_USER")
-//                .antMatchers("/incomingVisits/**").hasAuthority("ROLE_USER")
-//                .antMatchers("/questionGroups/**").hasAuthority("ROLE_USER");
+                .antMatchers("/patients/**").hasAuthority("ROLE_USER")
+                .antMatchers("/incomingVisits/**").hasAuthority("ROLE_USER")
+                .antMatchers("/visits/**").hasAuthority("ROLE_USER")
+                .antMatchers("/incomingVisits/**").hasAuthority("ROLE_USER")
+                .antMatchers("/questionGroups/**").hasAuthority("ROLE_USER")
 
 
-//                .and()
-//                .formLogin().defaultSuccessUrl("/expenses");
+                .and()
+                .formLogin().defaultSuccessUrl("/patients/");
 //                .and()
 //                .logout()
 //                .logoutSuccessHandler(new CustomLogoutSuccessHandler())

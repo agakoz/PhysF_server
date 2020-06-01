@@ -26,7 +26,7 @@ public class UserService {
     }
 
     // TODO  user validation
-    public void createAndAddUser(User user) throws  IOException {
+    public void createAndAddUser(User user) throws IOException {
 
         String encodePassword = getEncodedPassword(user);
         user.setPassword(encodePassword);
@@ -50,15 +50,17 @@ public class UserService {
         }
     }
 
-    public UserDTO getUserById(int id) throws IOException{
-        if(userExists(id))
-            return userRepository.retrieveUserAsDTOById(id);
-        else throw new IOException(String.format("No user with id=\"%d\".", id));
+    public UserDTO getUserById(int id) throws IOException {
+        userExistsOrThrow(id);
+        return userRepository.retrieveUserAsDTOById(id);
+
     }
 
 
-    public void updateUser(int id, Patient patient) throws IOException {
-        userRepository.save(getExistingUser(id));
+    public void updateUser(int id, User user) throws IOException {
+        userExistsOrThrow(id);
+        userRepository.save(user);
+
     }
 
     public void deleteUser(int id) throws IOException {
@@ -66,16 +68,19 @@ public class UserService {
         userRepository.delete(getExistingUser(id));
     }
 
-    public boolean userExists(int id) {
+    private boolean userExists(int id) {
         Optional<User> user = userRepository.findById(id);
         return user.isPresent();
     }
 
-    public User getExistingUser(int id) throws IOException {
-        if (userExists(id)) {
-            return userRepository.findById(id).get();
-        } else {
-            throw new IllegalArgumentException(String.format("user with id: \"%d\" does not exist ", id));
-        }
+    private void userExistsOrThrow(int id) throws IOException {
+        if (!userExists(id))
+            throw new IOException(String.format("No user with id=\"%d\".", id));
+    }
+
+    private User getExistingUser(int id) throws IOException {
+        userExistsOrThrow(id);
+        return userRepository.findById(id).get();
+
     }
 }
