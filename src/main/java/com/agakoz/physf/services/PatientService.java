@@ -4,6 +4,7 @@ import com.agakoz.physf.model.DTO.PatientDTO;
 import com.agakoz.physf.model.Patient;
 import com.agakoz.physf.model.User;
 import com.agakoz.physf.repositories.PatientRepository;
+import com.agakoz.physf.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,6 +28,7 @@ public class PatientService {
 
         checkPeselOrThrow(patient.getPesel());
         patientRepository.save(patient);
+
     }
 
     public void updatePatient(int id, Patient patient) throws IOException {
@@ -43,6 +45,13 @@ public class PatientService {
         Patient patientToDelete = getPatient(id);
         patientRepository.delete(patientToDelete);
 
+    }
+    public void deleteAllPatientsFromCurrentUser() throws IOException {;
+        List<Integer> patientIds = patientRepository.getIdsByUserId(getCurrentUserId());
+        if (patientIds.isEmpty()) {
+            throw new IOException("User has no patients to delete.");
+        }
+        patientRepository.deleteAllFromUser(getCurrentUserId());
     }
 
     public List<PatientDTO> getAllPatientsFromCurrentUser() throws IOException {
@@ -123,4 +132,6 @@ public class PatientService {
         if (patients.size() == 0)
             throw new IOException(String.format("User has no patient with id= \"%d\"", patientId));
     }
+
+
 }

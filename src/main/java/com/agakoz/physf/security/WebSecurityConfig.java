@@ -35,7 +35,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
-//        http.csrf().disable();
+       http.csrf().disable();
 //        http.headers().disable();
 
 //https
@@ -44,7 +44,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .requiresSecure();
         http.authorizeRequests()
 ////                TODO: ROLE
-//                .antMatchers("/users/**").hasAuthority("ROLE_USER")
+                .antMatchers("/users/**").hasAuthority("ROLE_ADMIN")
                 .antMatchers("/patients/**").hasAuthority("ROLE_USER")
                 .antMatchers("/incomingVisits/**").hasAuthority("ROLE_USER")
                 .antMatchers("/visits/**").hasAuthority("ROLE_USER")
@@ -53,7 +53,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
                 .and()
-                .formLogin().defaultSuccessUrl("/patients/");
+                .formLogin().defaultSuccessUrl("/profile/");
 //                .and()
 //                .logout()
 //                .logoutSuccessHandler(new CustomLogoutSuccessHandler())

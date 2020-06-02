@@ -34,4 +34,9 @@ public interface PatientRepository extends JpaRepository<Patient, Integer> {
     @Query("SELECT p.id FROM Patient p where p.id = :patientId and p.user.id = :userId  ")
     List<Integer> getByIdAndCurrent( @Param("patientId") int patientId, @Param("userId") int userId);
 
+    @Query("SELECT p.id FROM Patient p where  p.user.id = :userId  ")
+    List<Integer> getIdsByUserId( @Param("userId") int userId);
+
+    @Query("DELETE FROM Patient p where p.user.id = :userId")
+    void deleteAllFromUser(@Param("userId") int userId);
 }

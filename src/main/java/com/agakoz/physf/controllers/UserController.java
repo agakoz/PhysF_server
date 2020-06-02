@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/admin/users")
 public class UserController {
     private UserRepository userRepository;
     private UserService userService;
@@ -39,7 +39,7 @@ public class UserController {
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> getAllUsers(@PathVariable int id) {
+    public ResponseEntity<Object> getUserById(@PathVariable int id) {
         try {
             UserDTO user = userService.getUserById(id);
             return new ResponseEntity<>(user, HttpStatus.OK);
