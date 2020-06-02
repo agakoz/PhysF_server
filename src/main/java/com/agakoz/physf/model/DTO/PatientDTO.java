@@ -1,33 +1,22 @@
 package com.agakoz.physf.model.DTO;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 
 import java.util.Date;
 
 @Data
 @AllArgsConstructor
-@RequiredArgsConstructor
+
 public class PatientDTO {
-    @NonNull
-    int id;
-    @NonNull
-    private int userId;
-    @NonNull
     private String name;
-    @NonNull
     private String surname;
-    @NonNull
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     private Date birthDate;
-    @NonNull
     private String pesel;
-    @NonNull
     private char sex;
-    @NonNull
     private String address;
-    @NonNull
     private String city;
     private String email;
     private String phone;
