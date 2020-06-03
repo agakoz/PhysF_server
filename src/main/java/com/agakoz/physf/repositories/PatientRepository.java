@@ -14,7 +14,7 @@ import java.util.Optional;
 public interface PatientRepository extends JpaRepository<Patient, Integer> {
 
     @Query("SELECT new com.agakoz.physf.model.DTO.PatientDTO" +
-            "(p.name, p.surname, p.birthDate, p.pesel, p.sex, p.address, p.city, p.email, p.phone, p.lifestyle, " +
+            "(p.id, p.name, p.surname, p.birthDate, p.pesel, p.sex, p.address, p.city, p.email, p.phone, p.lifestyle, " +
             "p.profession, p.guardian, p.pastDiseases, p.chronicDiseases, p.hospitalization, p.surgeries, p.pastTreatment, " +
             "p.allergies, p.familyDiseases, p.medicalCertificate, p.extraDetails) " +
             "FROM Patient p " +
@@ -23,7 +23,7 @@ public interface PatientRepository extends JpaRepository<Patient, Integer> {
 
 
     @Query("SELECT new com.agakoz.physf.model.DTO.PatientDTO" +
-            "(p.name, p.surname, p.birthDate, p.pesel, p.sex, p.address, p.city, p.email, p.phone, p.lifestyle, " +
+            "(p.id, p.name, p.surname, p.birthDate, p.pesel, p.sex, p.address, p.city, p.email, p.phone, p.lifestyle, " +
             "p.profession, p.guardian, p.pastDiseases, p.chronicDiseases, p.hospitalization, p.surgeries, p.pastTreatment, " +
             "p.allergies, p.familyDiseases, p.medicalCertificate, p.extraDetails) FROM Patient p where p.id = :id and p.user.id= :userId")
     Optional<PatientDTO> retrievePatientDTOByUserIdAndPatientId(@Param("userId")int userId, @Param("id") int patientId);

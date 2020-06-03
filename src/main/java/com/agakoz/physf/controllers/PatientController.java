@@ -1,5 +1,6 @@
 package com.agakoz.physf.controllers;
 
+import com.agakoz.physf.model.DTO.PatientCreateOrUpdateDTO;
 import com.agakoz.physf.model.DTO.PatientDTO;
 import com.agakoz.physf.model.Patient;
 import com.agakoz.physf.model.User;
@@ -48,7 +49,7 @@ public class PatientController {
         }
     }
     @PostMapping("/add")
-    public ResponseEntity<Object> addPatient(Patient patient){
+    public ResponseEntity<Object> addPatient(PatientCreateOrUpdateDTO patient){
         try {
             patientService.addPatient(patient);
             return new ResponseEntity<>(patient, HttpStatus.CREATED);
@@ -77,7 +78,7 @@ public class PatientController {
         }
     }
     @PutMapping("/{id}")
-    ResponseEntity<String> updatePatient(@PathVariable int id,  Patient patient) {
+    ResponseEntity<String> updatePatient(@PathVariable int id,  PatientCreateOrUpdateDTO patient) {
         try {
             patientService.updatePatient(id, patient);
             return new ResponseEntity<>(

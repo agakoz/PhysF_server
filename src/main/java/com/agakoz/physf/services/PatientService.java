@@ -1,10 +1,11 @@
 package com.agakoz.physf.services;
 
+import com.agakoz.physf.model.DTO.PatientCreateOrUpdateDTO;
 import com.agakoz.physf.model.DTO.PatientDTO;
 import com.agakoz.physf.model.Patient;
 import com.agakoz.physf.model.User;
 import com.agakoz.physf.repositories.PatientRepository;
-import com.agakoz.physf.repositories.UserRepository;
+import com.agakoz.physf.utils.ObjectMapperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,20 +25,23 @@ public class PatientService {
         this.patientRepository = patientRepository;
     }
 
-    public void addPatient(Patient patient) throws IOException {
+    public void addPatient(PatientCreateOrUpdateDTO patientDTO) throws IOException {
 
-        checkPeselOrThrow(patient.getPesel());
-        patientRepository.save(patient);
+        checkPeselOrThrow(patientDTO.getPesel());
+        Patient newPatient = ObjectMapperUtils.map(patientDTO, new Patient() );
+        newPatient.setUser(getCurrentUser());
+        patientRepository.save(newPatient);
 
     }
 
-    public void updatePatient(int id, Patient patient) throws IOException {
-        patientExistsOrThrow(id);
-        if (id == patient.getId()) {
-            checkPeselOrThrow(patient.getPesel());
-            patientRepository.save(patient);
-        } else
-            throw new IOException("id of patient to be updated is wrong!");
+    public void updatePatient(int patientId, PatientCreateOrUpdateDTO patientDTO) throws IOException {
+        patientExistsOrThrow(patientId);
+        Patient oldPatient = getPatient(patientId);
+        Patient updatedPatient = ObjectMapperUtils.map(patientDTO, oldPatient);
+
+        checkPeselForExistingUserOrThrow(patientId, updatedPatient.getPesel());
+        patientRepository.save(updatedPatient);
+
     }
 
     public void deletePatient(int id) throws IOException {
@@ -46,7 +50,9 @@ public class PatientService {
         patientRepository.delete(patientToDelete);
 
     }
-    public void deleteAllPatientsFromCurrentUser() throws IOException {;
+
+    public void deleteAllPatientsFromCurrentUser() throws IOException {
+        ;
         List<Integer> patientIds = patientRepository.getIdsByUserId(getCurrentUserId());
         if (patientIds.isEmpty()) {
             throw new IOException("User has no patients to delete.");
@@ -89,7 +95,19 @@ public class PatientService {
         return patientRepository.findById(id).get();
 
     }
+    private User getCurrentUser() throws IOException {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
+        User currentUser;
+        if (principal instanceof UserDetails) {
+            currentUser = ((User) (principal));
+
+        } else {
+            currentUser = null;
+
+        }
+        return currentUser;
+    }
     private int getCurrentUserId() throws IOException {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
@@ -111,12 +129,29 @@ public class PatientService {
         if (!isPeselOfGoodLength(pesel)) throw new IllegalArgumentException("pesel should consist of 11 digits");
     }
 
+    private void checkPeselForExistingUserOrThrow(int patientId, String pesel) throws IOException {
+        if (pesel == null) throw new IllegalArgumentException("Pesel is obligatory");
+        if (!isPeselUnique(pesel, patientId)) throw new IllegalArgumentException("Patient with this pesel already exists");
+        if (!isPeselOfGoodLength(pesel)) throw new IllegalArgumentException("pesel should consist of 11 digits");
+    }
+
     private boolean isPeselUnique(String pesel) throws IOException {
 
         if (pesel.length() > 0) {
             int currentUserId = getCurrentUserId();
-            List<String> patientsWithTheSamePesel = patientRepository.findByPesel(pesel, currentUserId);
+            List<Integer> patientsWithTheSamePesel = patientRepository.findByPesel(pesel, currentUserId);
             return patientsWithTheSamePesel.size() == 0;
+        }
+        return false;
+    }
+
+    private boolean isPeselUnique(String pesel, int patientId) throws IOException {
+
+        if (pesel.length() > 0) {
+            int currentUserId = getCurrentUserId();
+            List<Integer> patientsWithTheSamePesel = patientRepository.findByPesel(pesel, currentUserId);
+
+            return patientsWithTheSamePesel.size() == 1 && patientsWithTheSamePesel.contains(patientId);
         }
         return false;
     }
@@ -133,5 +168,16 @@ public class PatientService {
             throw new IOException(String.format("User has no patient with id= \"%d\"", patientId));
     }
 
-
+//    private Patient updateEntity(int patientId, PatientCreateOrUpdateDTO patientDTO) throws IOException {
+//        Patient patient = getPatient(patientId);
+//        patient.setName(patientDTO.getName());
+//        patient.setSurname(patientDTO.getSurname());
+//        patient.setBirthDate(patientDTO.getBirthDate());
+//        patient.setPesel(patientDTO.getPesel());
+//        patient.setSex(patientDTO.getSex());
+//        patient.setAddress(patientDTO.getAddress());
+//        patient.set
+//
+//
+//    }
 }
