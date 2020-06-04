@@ -35,7 +35,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
-       http.csrf().disable();
+        http.csrf().disable();
 //        http.headers().disable();
 
 //https
@@ -53,7 +53,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
                 .and()
-                .formLogin().defaultSuccessUrl("/profile/");
+                .formLogin().defaultSuccessUrl("/profile/info");
 //                .and()
 //                .logout()
 //                .logoutSuccessHandler(new CustomLogoutSuccessHandler())

@@ -28,12 +28,12 @@ public class PatientController {
         this.patientService = patientService;
     }
 
-    @GetMapping("/")
+    @GetMapping("/all")
     public ResponseEntity<Object> getAllPatientFromCurrentUser() {
         try {
             List<PatientDTO> patients = patientService.getAllPatientsFromCurrentUser();
             return new ResponseEntity<>(patients, HttpStatus.OK);
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             return new ResponseEntity<>(String.format("Error! %s", ex.getMessage()), HttpStatus.NOT_FOUND);
         }
     }
@@ -44,7 +44,7 @@ public class PatientController {
         try {
             PatientDTO patient = patientService.getPatientByIdFromCurrentUser(id);
             return new ResponseEntity<>(patient, HttpStatus.OK);
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             return new ResponseEntity<>(String.format("Error! %s", ex.getMessage()), HttpStatus.NOT_FOUND);
         }
     }
@@ -53,7 +53,7 @@ public class PatientController {
         try {
             patientService.addPatient(patient);
             return new ResponseEntity<>(patient, HttpStatus.CREATED);
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             return new ResponseEntity<>(String.format("Error! %s", ex.getMessage()), HttpStatus.NOT_FOUND);
         }
     }
@@ -62,7 +62,7 @@ public class PatientController {
         try{
             patientService.deletePatient(id);
             return new ResponseEntity<>("User deleted successfully", HttpStatus.OK);
-        } catch (IOException ex){
+        } catch (Exception ex){
             return new ResponseEntity<>(String.format("Error! %s", ex.getMessage()), HttpStatus.NOT_FOUND);
 
         }
@@ -72,19 +72,20 @@ public class PatientController {
         try{
             patientService.deleteAllPatientsFromCurrentUser();
             return new ResponseEntity<>("User deleted successfully", HttpStatus.OK);
-        } catch (IOException ex){
+        } catch (Exception ex){
             return new ResponseEntity<>(String.format("Error! %s", ex.getMessage()), HttpStatus.NOT_FOUND);
 
         }
     }
-    @PutMapping("/{id}")
+    @PutMapping("update/{id}")
     ResponseEntity<String> updatePatient(@PathVariable int id,  PatientCreateOrUpdateDTO patient) {
         try {
+
             patientService.updatePatient(id, patient);
             return new ResponseEntity<>(
                     "patient updated successfully",
                     HttpStatus.OK);
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             return new ResponseEntity<>(
                     "Update failed! " + ex.getMessage(),
                     HttpStatus.NOT_FOUND);

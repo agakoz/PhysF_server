@@ -1,18 +1,16 @@
 package com.agakoz.physf.controllers;
 
-import com.agakoz.physf.model.DTO.UserDTO;
-import com.agakoz.physf.model.User;
+import com.agakoz.physf.model.DTO.CurrentUserAccountDTO;
+import com.agakoz.physf.model.DTO.CurrentUserDTO;
+import com.agakoz.physf.model.DTO.CurrentUserPersonalDTO;
 import com.agakoz.physf.repositories.UserRepository;
 import com.agakoz.physf.services.CurrentUserService;
-import com.agakoz.physf.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
-import java.util.List;
-
+//TODO: powinien zwracac cos innego tutaj
 @RestController
 @RequestMapping("/profile")
 public class CurrentUserController {
@@ -34,7 +32,7 @@ public class CurrentUserController {
                         String.format("User with id= \"%d\" deleted successfully", id),
                         HttpStatus.OK);
 
-            } catch (IOException ex) {
+            } catch (Exception ex) {
                 return new ResponseEntity<>(
                         String.format("Error deleting! %s", ex.getMessage()),
                         HttpStatus.CONFLICT);
@@ -43,26 +41,39 @@ public class CurrentUserController {
 
 
 
-        @PutMapping("/update")
-    ResponseEntity<String> updateUser(User user) {
+        @PutMapping("/update/account")
+    ResponseEntity<String> updateUser(CurrentUserAccountDTO userAccountDTO) {
             try {
-                currentUserService.updateUser(user);
+                currentUserService.updateCurrentUserAccount(userAccountDTO);
                 return new ResponseEntity<>(
-                        "user updated successfully",
+                        "user account info updated successfully",
                         HttpStatus.OK);
-            } catch (IOException ex) {
+            } catch (Exception ex) {
                 return new ResponseEntity<>(
                         "Update failed! " + ex.getMessage(),
                         HttpStatus.NOT_FOUND);
             }
         }
+    @PutMapping("/update/personal")
+    ResponseEntity<String> updateUser(CurrentUserPersonalDTO userPersonalDTO) {
+        try {
+            currentUserService.updateCurrentUserPersonal(userPersonalDTO);
+            return new ResponseEntity<>(
+                    "user personal info updated successfully",
+                    HttpStatus.OK);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(
+                    "Update failed! " + ex.getMessage(),
+                    HttpStatus.NOT_FOUND);
+        }
+    }
 
-        @GetMapping("/")
+        @GetMapping("/info")
     ResponseEntity<Object> getCurrentUser(){
             try {
-                UserDTO user = currentUserService.getUser();
+                CurrentUserDTO user = currentUserService.getCurrentUserDTO();
                 return new ResponseEntity<>(user, HttpStatus.OK);
-            } catch (IOException ex) {
+            } catch (Exception ex) {
                 return new ResponseEntity<>(
                         String.format("Error! %s", ex.getMessage()),
                         HttpStatus.NOT_FOUND);

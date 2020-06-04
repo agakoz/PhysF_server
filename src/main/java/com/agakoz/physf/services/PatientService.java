@@ -25,8 +25,8 @@ public class PatientService {
 
         this.patientRepository = patientRepository;
     }
-
-    public void addPatient(PatientCreateOrUpdateDTO patientDTO) throws IOException {
+//TODO patient validation
+    public void addPatient(PatientCreateOrUpdateDTO patientDTO) throws IllegalArgumentException {
 
         checkPeselOrThrow(patientDTO.getPesel());
         Patient newPatient = ObjectMapperUtils.map(patientDTO, new Patient());
@@ -35,7 +35,7 @@ public class PatientService {
 
     }
 
-    public void updatePatient(int patientId, PatientCreateOrUpdateDTO patientDTO) throws IOException {
+    public void updatePatient(int patientId, PatientCreateOrUpdateDTO patientDTO) throws IllegalArgumentException {
         patientExistsOrThrow(patientId);
         Patient oldPatient = getPatient(patientId);
         Patient updatedPatient = ObjectMapperUtils.map(patientDTO, oldPatient);
@@ -111,7 +111,7 @@ public class PatientService {
         return currentUser;
     }
 
-    private void checkPeselOrThrow(String pesel) throws IllegalArgumentException, CurrentUserException {
+    private void checkPeselOrThrow(String pesel) throws PeselIsNullException, BadLengthPeselException,PersonWithPeselAlreadyExistsException, CurrentUserException {
         if (pesel == null) throw new PeselIsNullException();
         if (!isPeselUnique(pesel)) throw new PersonWithPeselAlreadyExistsException("User");
         if (!isPeselOfGoodLength(pesel)) throw new BadLengthPeselException();
