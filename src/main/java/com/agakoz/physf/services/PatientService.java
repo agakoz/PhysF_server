@@ -91,7 +91,7 @@ public class PatientService {
             throw new PatientWithIdNotExistsException(id);
     }
 
-    private Patient getPatient(int id) throws PatientWithIdNotExistsException {
+    public Patient getPatient(int id) throws PatientWithIdNotExistsException {
         patientExistsOrThrow(id);
         return patientRepository.findById(id).get();
 
@@ -149,7 +149,7 @@ public class PatientService {
         return pesel.length() == 11;
     }
 
-    private void checkPatientOfCurrentUserOrThrow(int patientId) throws PatientWithIdNotExistsException, CurrentUserException {
+    public void checkPatientOfCurrentUserOrThrow(int patientId) throws PatientWithIdNotExistsException, CurrentUserException {
         int currentUserId = getCurrentUser().getId();
         List<Integer> patients = patientRepository.getByIdAndCurrent(patientId, currentUserId);
         if (patients.size() == 0)

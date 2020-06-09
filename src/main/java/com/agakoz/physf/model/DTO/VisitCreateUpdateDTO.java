@@ -10,9 +10,8 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class VisitDTO {
-    @NonNull
-    private int id;
+public class VisitCreateUpdateDTO {
+
     @NonNull
     private int patientId;
     @NonNull
