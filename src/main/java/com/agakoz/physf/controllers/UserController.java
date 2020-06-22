@@ -66,25 +66,8 @@ public class UserController {
             }
         }
 
-        @PostMapping("/register")
-        ResponseEntity<String> register ( User user){
-            try {
-                userService.createAndAddUser(user);
-                return new ResponseEntity<>(
-                        "user registered successfully",
-                        HttpStatus.CREATED);
-            } catch (IOException ex) {
-                return new ResponseEntity<>(
-                        "Registration failed " + ex.getMessage(),
-                        HttpStatus.NOT_FOUND);
-            }
-        }
-//@PostMapping("/register")
-//String register ( User user) throws IOException{
-//
-//        userService.createAndAddUser(user);
-//return "success";
-//}
+
+
         @PutMapping("/{id}")
     ResponseEntity<String> updateUser(@PathVariable int id,  User user) {
             try {

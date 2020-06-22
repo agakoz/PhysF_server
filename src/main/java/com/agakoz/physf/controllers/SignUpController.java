@@ -3,6 +3,8 @@ package com.agakoz.physf.controllers;
 import com.agakoz.physf.model.User;
 import com.agakoz.physf.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,5 +26,17 @@ public class SignUpController {
         return "sign-up";
     }
 
-
+    @PostMapping("/register")
+    ResponseEntity<String> register (User user){
+        try {
+            userService.createAndAddUser(user);
+            return new ResponseEntity<>(
+                    "user registered successfully",
+                    HttpStatus.CREATED);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(
+                    "Registration failed " + ex.getMessage(),
+                    HttpStatus.NOT_FOUND);
+        }
+    }
 }

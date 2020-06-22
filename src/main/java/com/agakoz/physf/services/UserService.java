@@ -26,7 +26,7 @@ public class UserService {
     }
 
     // TODO  user validation
-    public void createAndAddUser(User user) throws IOException {
+    public void createAndAddUser(User user) throws Exception {
 
         String encodePassword = getEncodedPassword(user);
         user.setPassword(encodePassword);
