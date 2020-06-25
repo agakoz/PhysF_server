@@ -5,10 +5,7 @@ import com.agakoz.physf.model.DTO.VisitDTO;
 import com.agakoz.physf.model.User;
 import com.agakoz.physf.model.Visit;
 import com.agakoz.physf.repositories.VisitRepository;
-import com.agakoz.physf.services.exceptions.CurrentUserException;
-import com.agakoz.physf.services.exceptions.NoVisitsException;
-import com.agakoz.physf.services.exceptions.PatientWithIdNotExistsException;
-import com.agakoz.physf.services.exceptions.VisitNotExistsException;
+import com.agakoz.physf.services.exceptions.*;
 import com.agakoz.physf.utils.ObjectMapperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -69,7 +66,7 @@ public class VisitService {
             Visit updated = ObjectMapperUtils.map(visitDTO, oldVisit);
             visitRepository.save(updated);
         } else {
-//            throw new
+            throw new VisitWithIdNotExistsException(visitId);
         }
 
     }
@@ -102,8 +99,7 @@ public class VisitService {
     public VisitDTO getById(int visitId) throws VisitNotExistsException{
         Optional<VisitDTO> visitOpt = visitRepository.retrieveDTOById(visitId);
         if(visitOpt.isPresent()){
-            VisitDTO visit = visitOpt.get();
-            return visit;
+            return visitOpt.get();
         }else {
             throw new VisitNotExistsException();
         }

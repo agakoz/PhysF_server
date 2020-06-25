@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 import static java.time.LocalDate.now;
 
@@ -29,14 +30,13 @@ public class PlannedVisitService {
     }
 
     public List<PlannedVisitDTO> getAllPlannedVisits() throws CurrentUserException, NoVisitsException {
-        List<PlannedVisitDTO> plannedVisits = plannedVisitRepository.findAllByUserId(getCurrentUser().getId());
+        List<PlannedVisitDTO> plannedVisits = plannedVisitRepository.retrieveAllAsDTOByUserId(getCurrentUser().getId());
         if (plannedVisits.size() > 0) {
             return plannedVisits;
         } else {
             throw new NoVisitsException();
         }
     }
-
 
     public void planVisit(PlannedVisitCreateDTO plannedVisitCreateDTO) throws IllegalArgumentException {
         patientService.checkPatientOfCurrentUserOrThrow(plannedVisitCreateDTO.getPatientId());
@@ -64,6 +64,24 @@ public class PlannedVisitService {
     }
 
 
+    public void update(int plannedVisitId, PlannedVisitCreateDTO plannedVisitCreateDTO) throws PlannedVisitWithIdNotExistsException {
+        Optional<PlannedVisit> oldVisitOpt = plannedVisitRepository.getById(plannedVisitId);
+        if (oldVisitOpt.isPresent()) {
+
+            PlannedVisit oldVisit = oldVisitOpt.get();
+            PlannedVisit updatedVisit = ObjectMapperUtils.map(plannedVisitCreateDTO, oldVisit);
+            validate(updatedVisit);
+            plannedVisitRepository.save(updatedVisit);
+        } else throw new PlannedVisitWithIdNotExistsException(plannedVisitId);
+    }
+
+    public void delete(int plannedVisitId) throws PlannedVisitWithIdNotExistsException {
+        Optional<PlannedVisit> plannedVisitOpt = plannedVisitRepository.getById(plannedVisitId);
+        if (plannedVisitOpt.isPresent()) {
+            plannedVisitRepository.delete(plannedVisitOpt.get());
+        } else throw new PlannedVisitWithIdNotExistsException(plannedVisitId);
+    }
+
     private void validate(PlannedVisitCreateDTO visit) {
         if (visit.getDate() == null) throw new NullDateException();
         if (visit.getDate().isBefore(now())) throw new PlannedVisitBeforeTodayException();
@@ -71,4 +89,14 @@ public class PlannedVisitService {
         if (visit.getEndTime() == null) throw new NullEndTimeException();
         if (visit.getStartTime().isAfter(visit.getEndTime())) throw new StartTimeAfterEndTimeException();
     }
+
+    private void validate(PlannedVisit visit) {
+        if (visit.getDate() == null) throw new NullDateException();
+        if (visit.getDate().isBefore(now())) throw new PlannedVisitBeforeTodayException();
+        if (visit.getStartTime() == null) throw new NullStartTimeException();
+        if (visit.getEndTime() == null) throw new NullEndTimeException();
+        if (visit.getStartTime().isAfter(visit.getEndTime())) throw new StartTimeAfterEndTimeException();
+    }
+
+
 }
