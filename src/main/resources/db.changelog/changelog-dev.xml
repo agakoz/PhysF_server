@@ -12,6 +12,6 @@
     <include file="version/questionGroupsTable.xml" relativeToChangelogFile="true"/>
     <include file="version/questionsTable.xml" relativeToChangelogFile="true"/>
     <include file="version/answersTable.xml" relativeToChangelogFile="true"/>
-    <include file="version/incomingVisitsTable.xml" relativeToChangelogFile="true"/>
+    <include file="version/plannedVisitsTable.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

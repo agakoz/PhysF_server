@@ -1,6 +1,7 @@
 package com.agakoz.physf.services;
 
 
+import com.agakoz.physf.Authentication.IAuthenticationFacade;
 import com.agakoz.physf.model.DTO.CurrentUserAccountDTO;
 import com.agakoz.physf.model.DTO.CurrentUserDTO;
 import com.agakoz.physf.model.DTO.CurrentUserPersonalDTO;
@@ -24,11 +25,13 @@ public class CurrentUserService {
 
     private UserRepository userRepository;
     private PasswordEncoder passwordEncoder;
+    private IAuthenticationFacade authenticationFacade;
 
     @Autowired
-    public CurrentUserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public CurrentUserService(UserRepository userRepository, PasswordEncoder passwordEncoder, IAuthenticationFacade iAuthenticationFacade) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.authenticationFacade = iAuthenticationFacade;
     }
 
 

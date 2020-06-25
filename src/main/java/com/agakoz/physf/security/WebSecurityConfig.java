@@ -46,9 +46,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 ////                TODO: ROLE
                 .antMatchers("/users/**").hasAuthority("ROLE_ADMIN")
                 .antMatchers("/patients/**").hasAuthority("ROLE_USER")
-                .antMatchers("/incomingVisits/**").hasAuthority("ROLE_USER")
+                .antMatchers("/plannedVisits/**").hasAuthority("ROLE_USER")
                 .antMatchers("/visits/**").hasAuthority("ROLE_USER")
-                .antMatchers("/incomingVisits/**").hasAuthority("ROLE_USER")
                 .antMatchers("/questionGroups/**").hasAuthority("ROLE_USER")
 
 
