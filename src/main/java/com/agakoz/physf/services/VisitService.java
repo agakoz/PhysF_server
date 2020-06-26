@@ -39,8 +39,10 @@ public class VisitService {
     public VisitWithPhotosDTO getById(int visitId) throws VisitNotExistsException {
         Optional<VisitDTO> visitOpt = visitRepository.retrieveDTOById(visitId);
         if (visitOpt.isPresent()) {
+            System.out.println("visit opt : " + visitOpt.get());
             VisitWithPhotosDTO visitWithPhotos = ObjectMapperUtils.map(visitOpt.get(), new VisitWithPhotosDTO());
             visitWithPhotos.setPhotos(photoRepository.getPhotosFromVisit(visitId));
+
             return visitWithPhotos;
         } else {
             throw new VisitNotExistsException();
