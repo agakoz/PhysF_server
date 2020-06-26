@@ -39,7 +39,7 @@ public class PlannedVisitService {
     }
 
     public void planVisit(PlannedVisitCreateDTO plannedVisitCreateDTO) throws IllegalArgumentException {
-        patientService.checkPatientOfCurrentUserOrThrow(plannedVisitCreateDTO.getPatientId());
+        patientService.validatePatientIdForCurrentUser(plannedVisitCreateDTO.getPatientId());
         validate(plannedVisitCreateDTO);
 
         PlannedVisit newVisit = ObjectMapperUtils.map(plannedVisitCreateDTO, new PlannedVisit());

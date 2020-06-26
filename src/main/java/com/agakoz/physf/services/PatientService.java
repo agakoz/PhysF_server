@@ -12,7 +12,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,7 +45,7 @@ public class PatientService {
     }
 
     public void deletePatient(int id) throws PatientWithIdNotExistsException, CurrentUserException {
-        checkPatientOfCurrentUserOrThrow(id);
+        validatePatientIdForCurrentUser(id);
         Patient patientToDelete = getPatient(id);
         patientRepository.delete(patientToDelete);
 
@@ -149,7 +148,7 @@ public class PatientService {
         return pesel.length() == 11;
     }
 
-    public void checkPatientOfCurrentUserOrThrow(int patientId) throws PatientWithIdNotExistsException, CurrentUserException {
+    public void validatePatientIdForCurrentUser(int patientId) throws PatientWithIdNotExistsException, CurrentUserException {
         int currentUserId = getCurrentUser().getId();
         List<Integer> patients = patientRepository.getByIdAndCurrent(patientId, currentUserId);
         if (patients.size() == 0)

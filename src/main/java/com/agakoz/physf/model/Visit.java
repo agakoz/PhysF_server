@@ -1,9 +1,13 @@
 package com.agakoz.physf.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import liquibase.pro.packaged.S;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -28,9 +32,12 @@ public class Visit {
     @NonNull
     private Patient patient;
 
-    @NonNull
     @Column
-    Date date;
+    @NonNull
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonProperty("date")
+    LocalDate date;
 
     @Column
     String reason;
