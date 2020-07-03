@@ -11,8 +11,11 @@
             <column name="user_id" type="int"/>
             <column name="patient_id" type="int"/>
             <column name="date" type="date"/>
-            <column name="reason" type="varchar(255)"/>
+            <column name="start_time" type="time"/>
+            <column name="end_time" type="time"/>
+            <column name="title" type="varchar(255)"/>
             <column name="symptoms" type="varchar(255)"/>
+            <column name="first_time" type="boolean"/>
             <column name="diagnosis" type="varchar(max)"/>
             <column name="recommendations" type="varchar(max)"/>
             <column name="examination_desc" type="varchar(max)"/>
@@ -25,6 +28,8 @@
         <addNotNullConstraint tableName="visits" columnName="patient_id" columnDataType="int"/>
         <addNotNullConstraint tableName="visits" columnName="id" columnDataType="int"/>
         <addNotNullConstraint tableName="visits" columnName="date" columnDataType="date"/>
+        <addNotNullConstraint tableName="visits" columnName="start_time" columnDataType="time"/>
+        <addNotNullConstraint tableName="visits" columnName="end_time" columnDataType="time"/>
 
         <addPrimaryKey tableName="visits" columnNames="id"/>
         <addForeignKeyConstraint baseTableName="visits" baseColumnNames="user_id" constraintName="fk_visits_user"

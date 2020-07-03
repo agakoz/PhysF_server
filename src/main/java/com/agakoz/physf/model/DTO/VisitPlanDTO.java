@@ -2,9 +2,7 @@ package com.agakoz.physf.model.DTO;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
 import lombok.*;
@@ -17,8 +15,9 @@ import java.time.LocalTime;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @NoArgsConstructor
-public class PlannedVisitCreateDTO {
-
+public class VisitPlanDTO {
+    @NonNull
+    int id;
 
     @NonNull
     private int patientId;
@@ -32,20 +31,18 @@ public class PlannedVisitCreateDTO {
 
     @DateTimeFormat(pattern = "HH:mm")
     @JsonFormat(pattern = "HH:mm")
-    @NonNull
     @JsonSerialize(using = LocalTimeSerializer.class)
-    @JsonDeserialize(using = LocalTimeDeserializer.class)
     @JsonProperty("startTime")
+    @NonNull
     LocalTime startTime;
 
     @DateTimeFormat(pattern = "HH:mm")
     @JsonFormat(pattern = "HH:mm")
     @JsonSerialize(using = LocalTimeSerializer.class)
-    @JsonDeserialize(using = LocalTimeDeserializer.class)
     @JsonProperty("endTime")
     @NonNull
     LocalTime endTime;
 
-    String note;
+    String title;
 
 }

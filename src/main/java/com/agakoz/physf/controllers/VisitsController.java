@@ -1,6 +1,8 @@
 package com.agakoz.physf.controllers;
 
 import com.agakoz.physf.model.DTO.VisitCreateUpdateDTO;
+import com.agakoz.physf.model.DTO.VisitPlanCreateUpdateDTO;
+import com.agakoz.physf.model.DTO.VisitPlanDTO;
 import com.agakoz.physf.model.DTO.VisitWithPhotosDTO;
 import com.agakoz.physf.services.VisitService;
 import com.agakoz.physf.services.exceptions.NoVisitsException;
@@ -13,10 +15,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.sql.Date;
 import java.util.List;
 
 @RestController
-@RequestMapping("/profile/visits")
+@RequestMapping("/visits")
 public class VisitsController {
     private VisitService visitService;
 
@@ -61,9 +64,9 @@ public class VisitsController {
     }
 
     @PostMapping(value = "/create", consumes = {"multipart/form-data"})
-    public ResponseEntity<String> addVisit(VisitCreateUpdateDTO visit, @RequestParam(value = "photos", required = false) MultipartFile[] photos) {
+    public ResponseEntity<String> addNewVisit(VisitCreateUpdateDTO visit, @RequestParam(value = "photos", required = false) MultipartFile[] photos) {
         try {
-            visitService.addVisit(visit, photos);
+            visitService.addNewVisit(visit, photos);
             return new ResponseEntity<>("visits created successfully", HttpStatus.CREATED);
 
         } catch (PatientWithIdNotExistsException ex) {
@@ -75,10 +78,7 @@ public class VisitsController {
         }
     }
 
-//    @Bean(name = "multipartResolver")
-//    public CommonsMultipartResolver commonsMultipartResolver(){
-//        return new CommonsMultipartResolver();
-//    }
+
 
     @PutMapping(value = "/{visitId}/update", consumes = "multipart/form-data")
     public ResponseEntity<String> updateVisit(@PathVariable int visitId, VisitCreateUpdateDTO visit, @RequestParam(value = "photos", required = false) MultipartFile[] photos) {
@@ -107,16 +107,50 @@ public class VisitsController {
         }
     }
 
-//    @GetMapping("/{visitId}/photos")
-//    public ResponseEntity<Object> getPhotos(@PathVariable int visitId) {
-//        try {
-//            List<PhotoDTO> photos = visitService.getPhotosFromVisit(visitId);
-//            return new ResponseEntity<>(photos, HttpStatus.OK);
-//
-//        } catch (NoPhotosException ex) {
-//            return new ResponseEntity<>(String.format("Error! %s", ex.getMessage()), HttpStatus.NOT_FOUND);
-//
-//        }
-//    }
+//planned visits
+@GetMapping("/planned/all")
+public ResponseEntity<Object> getPlannedVisits() {
+    try {
+        List<VisitPlanDTO> visits = visitService.getAllPlannedVisits();
+        return new ResponseEntity<>(visits, HttpStatus.OK);
+    } catch (NoVisitsException ex) {
+        return new ResponseEntity<>(String.format("Error! %s", ex.getMessage()), HttpStatus.NOT_FOUND);
+    }
+}
+
+
+    @PostMapping("/planned/create")
+    public ResponseEntity<String> planVisit(VisitPlanCreateUpdateDTO visitPlanCreateUpdateDTO) {
+        try {
+            visitService.planVisit(visitPlanCreateUpdateDTO);
+            return new ResponseEntity<>("visit planned successfully", HttpStatus.CREATED);
+
+        } catch (IllegalArgumentException ex) {
+            return new ResponseEntity<>(String.format("Error! %s", ex.getMessage()), HttpStatus.NOT_FOUND);
+
+        }
+    }
+
+    @PutMapping("/planned/edit/{visitId}")
+    public ResponseEntity<String> editPlannedVisit(@PathVariable int visitId, VisitPlanCreateUpdateDTO visitPlanCreateUpdateDTO) {
+        try {
+            visitService.editPlannedVisit(visitId, visitPlanCreateUpdateDTO);
+            return new ResponseEntity<>("visit plan updated successfully", HttpStatus.OK);
+
+        } catch (IllegalArgumentException ex) {
+            return new ResponseEntity<>(String.format("Error! %s", ex.getMessage()), HttpStatus.NOT_FOUND);
+
+        }
+    }
+    @GetMapping("/planned/{date}")
+    public ResponseEntity<Object> getPlannedVisitsByDate(Date date) {
+        try {
+            List<VisitPlanDTO> visits = visitService.getPlannedVisitsByDate(date);
+            return new ResponseEntity<>(visits, HttpStatus.OK);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(String.format("Error! %s", ex.getMessage()), HttpStatus.NOT_FOUND);
+        }
+    }
+
 
 }

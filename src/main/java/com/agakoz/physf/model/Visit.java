@@ -8,6 +8,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Date;
 
 @Entity
@@ -17,10 +18,11 @@ import java.util.Date;
 @RequiredArgsConstructor
 @Table(name = "visits")
 public class Visit {
+//    visit info
     @Id
     @Column
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int id;
+    private int id;
 
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
@@ -37,27 +39,44 @@ public class Visit {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @JsonFormat(pattern = "yyyy-MM-dd")
     @JsonProperty("date")
-    LocalDate date;
+    private LocalDate date;
+
+    @Column(name = "start_time")
+    @DateTimeFormat(pattern = "HH:mm")
+    @JsonFormat(pattern = "HH:mm")
+    @NonNull
+    private LocalTime startTime;
+
+    @DateTimeFormat(pattern = "HH:mm")
+    @JsonFormat(pattern = "HH:mm")
+    @NonNull
+    @Column(name = "end_time")
+    private LocalTime endTime;
 
     @Column
-    String reason;
+    private String title;
+// description
 
     @Column
-    String symptoms;
+    private String symptoms;
+
+    @Column(name = "first_time")
+    private  boolean firstTime;
+
+//   examination & treatment
+    @Column
+    private String diagnosis;
 
     @Column
-    String diagnosis;
-
-    @Column
-    String recommendations;
+    private String recommendations;
 
     @Column(name = "examination_desc")
-    String examinationDesc;
+    private  String examinationDesc;
 
     @Column
-    String treatment;
+    private String treatment;
 
     @Column
-    String notes;
+    private  String notes;
 
 }
