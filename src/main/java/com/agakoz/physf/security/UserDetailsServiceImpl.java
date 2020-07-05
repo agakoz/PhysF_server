@@ -26,7 +26,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<User> user = userRepository.findByUsername(username);
-        //????????? czy na pewno rzutowanie może byc?
 
         if (user.isEmpty())
             throw new UsernameNotFoundException(String.format("User with username %s not found", username));

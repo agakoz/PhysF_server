@@ -11,7 +11,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.validation.constraints.Email;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -72,10 +74,20 @@ public class User implements UserDetails {
     @Email
     String email;
 
-//    @Size(max = 20)
-//    @Column(name = "activation_key", length = 20)
-//    @JsonIgnore
-//    private String activationKey;
+    @NotNull
+    @Column(nullable = false)
+    private boolean activated = false;
+
+    @Size(max = 20)
+    @Column(name = "activation_key", length = 20)
+    @JsonIgnore
+    private String activationKey;
+
+    @Size(max = 20)
+    @Column(name = "reset_key", length = 20)
+    @JsonIgnore
+    private String resetKey;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

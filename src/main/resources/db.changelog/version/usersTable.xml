@@ -12,6 +12,9 @@
             <column name="username" type="varchar(255)"/>
             <column name="password" type="varchar(255)"/>
             <column name="role" type="varchar(255)"/>
+            <column name="activated" type="boolean"/>
+            <column name="activation_key" type="varchar(20)"/>
+            <column name="reset_key" type="varchar(20)"/>
             <column name="name" type="varchar(255)"/>
             <column name="surname" type="varchar(255)"/>
             <column name="company" type="varchar(255)"/>
@@ -29,22 +32,14 @@
         <addNotNullConstraint tableName="users" columnName="username" columnDataType="varchar(255)"/>
         <addNotNullConstraint tableName="users" columnName="password" columnDataType="varchar(255)"/>
         <addNotNullConstraint tableName="users" columnName="role" columnDataType="varchar(255)"/>
+        <addNotNullConstraint tableName="users" columnName="activated" columnDataType="boolean"/>
 
-<!--        <addNotNullConstraint tableName="users" columnName="name" columnDataType="varchar(255)"/>-->
-<!--        <addNotNullConstraint tableName="users" columnName="surname" columnDataType="varchar(255)"/>-->
-<!--        <addNotNullConstraint tableName="users" columnName="company" columnDataType="varchar(255)"/>-->
-<!--        <addNotNullConstraint tableName="users" columnName="address" columnDataType="varchar(255)"/>-->
-<!--        <addNotNullConstraint tableName="users" columnName="city" columnDataType="varchar(50)"/>-->
-<!--        <addNotNullConstraint tableName="users" columnName="licence_number" columnDataType="varchar(255)"/>-->
-<!--        <addNotNullConstraint tableName="users" columnName="specializations" columnDataType="varchar(255)"/>-->
-<!--        <addNotNullConstraint tableName="users" columnName="professional_title" columnDataType="varchar(255)"/>-->
-<!--        <addNotNullConstraint tableName="users" columnName="birth_date" columnDataType="date"/>-->
-<!--        <addNotNullConstraint tableName="users" columnName="email" columnDataType="varchar(320)"/>-->
+
 
         <addPrimaryKey tableName="users" columnNames="id"/>
 
         <addUniqueConstraint tableName="users" columnNames="username"/>
 <!--        <addUniqueConstraint tableName="users" columnNames="licence_number"/>-->
-<!--        <addUniqueConstraint tableName="users" columnNames="email"/>-->
+        <addUniqueConstraint tableName="users" columnNames="email"/>
     </changeSet>
 </databaseChangeLog>
