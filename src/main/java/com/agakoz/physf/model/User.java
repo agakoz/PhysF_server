@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import javax.validation.constraints.Email;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -26,7 +27,7 @@ public class User implements UserDetails {
     @NonNull
     int id;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false, length = 255, unique = true)
     @NonNull
     private String username;
 
@@ -53,7 +54,7 @@ public class User implements UserDetails {
     @Column
     String city;
 
-    @Column(name="licence_number", length = 50)
+    @Column(name="licence_number", length = 50, unique = true)
     String licenceNumber;
 
     @Column
@@ -65,7 +66,8 @@ public class User implements UserDetails {
     @Column(name="birth_date")
     Date birthDate;
 
-    @Column(length = 320)
+    @Column(length = 320, unique = true)
+    @Email
     String email;
 
     @Override
