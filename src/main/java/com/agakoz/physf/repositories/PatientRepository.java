@@ -18,25 +18,25 @@ public interface PatientRepository extends JpaRepository<Patient, Integer> {
             "p.profession, p.guardian, p.pastDiseases, p.chronicDiseases, p.hospitalization, p.surgeries, p.pastTreatment, " +
             "p.allergies, p.familyDiseases, p.medicalCertificate, p.extraDetails) " +
             "FROM Patient p " +
-            "where p.user.id = :userId")
-    List<PatientDTO> retrievePatientsDTOByUserId (@Param("userId") int userId);
+            "where p.user.username = :username")
+    List<PatientDTO> retrievePatientsDTOByUserId (@Param("username") String currentUsername);
 
 
     @Query("SELECT new com.agakoz.physf.model.DTO.PatientDTO" +
             "(p.id, p.name, p.surname, p.birthDate, p.pesel, p.sex, p.address, p.city, p.email, p.phone, p.lifestyle, " +
             "p.profession, p.guardian, p.pastDiseases, p.chronicDiseases, p.hospitalization, p.surgeries, p.pastTreatment, " +
-            "p.allergies, p.familyDiseases, p.medicalCertificate, p.extraDetails) FROM Patient p where p.id = :id and p.user.id= :userId")
-    Optional<PatientDTO> retrievePatientDTOByUserIdAndPatientId(@Param("userId")int userId, @Param("id") int patientId);
+            "p.allergies, p.familyDiseases, p.medicalCertificate, p.extraDetails) FROM Patient p where p.id = :id and p.user.username= :username")
+    Optional<PatientDTO> retrievePatientDTOByUsernameAndPatientId(@Param("username")String currentUsername, @Param("id") int patientId);
 
-    @Query("SELECT p.id FROM Patient p where p.pesel = :pesel and p.user.id = :userId  ")
-    List<Integer> findByPesel( @Param("pesel") String pesel, @Param("userId") int userId);
+    @Query("SELECT p.id FROM Patient p where p.pesel = :pesel and p.user.username = :username  ")
+    List<Integer> findByPesel( @Param("pesel") String pesel, @Param("username") String currentUsername);
 
-    @Query("SELECT p.id FROM Patient p where p.id = :patientId and p.user.id = :userId  ")
-    List<Integer> getByIdAndCurrent( @Param("patientId") int patientId, @Param("userId") int userId);
+    @Query("SELECT p.id FROM Patient p where p.id = :patientId and p.user.username = :username  ")
+    List<Integer> getByIdAndCurrent( @Param("patientId") int patientId, @Param("username") String currentUsername);
 
-    @Query("SELECT p.id FROM Patient p where  p.user.id = :userId  ")
-    List<Integer> getIdsByUserId( @Param("userId") int userId);
+    @Query("SELECT p.id FROM Patient p where  p.user.username = :username  ")
+    List<Integer> getIdsByUserId(@Param("username") String currentUsername);
 
-    @Query("DELETE FROM Patient p where p.user.id = :userId")
-    void deleteAllFromUser(@Param("userId") int userId);
+    @Query("DELETE FROM Patient p where p.user.username = :username")
+    void deleteAllFromUser(@Param("username") String currentUsername);
 }

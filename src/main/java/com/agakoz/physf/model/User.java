@@ -1,5 +1,6 @@
 package com.agakoz.physf.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -10,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.validation.constraints.Email;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -69,6 +71,11 @@ public class User implements UserDetails {
     @Column(length = 320, unique = true)
     @Email
     String email;
+
+//    @Size(max = 20)
+//    @Column(name = "activation_key", length = 20)
+//    @JsonIgnore
+//    private String activationKey;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

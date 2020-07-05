@@ -26,12 +26,19 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query("SELECT new com.agakoz.physf.model.DTO.UserDTO(u.id, u.username, u.password, u.role, u.name, u.surname, u.company, u.address, u.city, u.licenceNumber, u.specializations, u.professionalTitle, u.birthDate, u.email) FROM User u WHERE u.id=:id")
     UserDTO retrieveUserAsDTOById(@Param("id")int id);
 
-    @Query("SELECT new com.agakoz.physf.model.DTO.CurrentUserDTO(u.id, u.username, u.name, u.surname, u.company, u.address, u.city, u.licenceNumber, u.specializations, u.professionalTitle, u.birthDate, u.email) FROM User u WHERE u.id=:id")
-    CurrentUserDTO retrieveCurrentUserAsDTOById(@Param("id")int id);
+    @Query("SELECT new com.agakoz.physf.model.DTO.CurrentUserDTO(u.id, u.username, u.name, u.surname, u.company, u.address, u.city, u.licenceNumber, u.specializations, u.professionalTitle, u.birthDate, u.email) FROM User u WHERE u.username=:username")
+    CurrentUserDTO retrieveCurrentUserAsDTOByUsername(@Param("username")String username);
 
     @Query("SELECT new com.agakoz.physf.model.DTO.CurrentUserPersonalDTO(u.name, u.surname, u.company, u.address, u.city, u.licenceNumber, u.specializations, u.professionalTitle, u.birthDate, u.email ) FROM User u WHERE u.id = :userId")
     CurrentUserPersonalDTO retrieveUserPersonalAsDTOById(@Param("userId") int userId );
 
     @Query("SELECT new com.agakoz.physf.model.DTO.CurrentUserAccountDTO(u.username, u.password ) FROM User u WHERE u.id = :userId")
     CurrentUserAccountDTO retrieveUserAccountAsDTOByUserId(@Param("userId") int userId );
+
+    Optional<User> findOneWithAuthoritiesByEmailIgnoreCase(String email);
+
+    Optional<Object> findOneByEmailIgnoreCase(String email);
+
+    @Query("DELETE FROM User u WHERE u.username=:currentUsername")
+    void deleteByUsername(Optional<String> currentUsername);
 }

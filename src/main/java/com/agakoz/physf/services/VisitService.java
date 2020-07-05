@@ -160,7 +160,7 @@ public class VisitService {
             currentUser = ((User) (principal));
 
         } else {
-            throw new CurrentUserException();
+            throw new CurrentUserException("");
 
         }
         return currentUser;

@@ -3,8 +3,10 @@ package com.agakoz.physf.controllers;
 import com.agakoz.physf.model.DTO.CurrentUserAccountDTO;
 import com.agakoz.physf.model.DTO.CurrentUserDTO;
 import com.agakoz.physf.model.DTO.CurrentUserPersonalDTO;
+import com.agakoz.physf.model.DTO.PasswordChangeDTO;
 import com.agakoz.physf.repositories.UserRepository;
 import com.agakoz.physf.services.CurrentUserService;
+import com.agakoz.physf.services.exceptions.InvalidPasswordException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,12 +26,12 @@ public class CurrentUserController {
     }
 
 
-        @DeleteMapping("/{id}")
-        ResponseEntity<String> deleteUser (@PathVariable Integer id){
+        @DeleteMapping("/delete")
+        ResponseEntity<String> deleteUser (){
             try {
                 currentUserService.deleteUser();
                 return new ResponseEntity<>(
-                        String.format("User with id= \"%d\" deleted successfully", id),
+                        String.format("User deleted successfully"),
                         HttpStatus.OK);
 
             } catch (Exception ex) {
@@ -80,4 +82,19 @@ public class CurrentUserController {
 
             }
         }
+
+
+    /**
+     * {@code POST  /change-password} : changes the current user's password.
+     *
+     * @param passwordChangeDto current and new password.
+     * @throws InvalidPasswordException {@code 400 (Bad Request)} if the new password is incorrect.
+     */
+    @PostMapping(path = "/change-password")
+    public void changePassword( PasswordChangeDTO passwordChangeDto) {
+//        if (!checkPasswordLength(passwordChangeDto.getNewPassword())) {
+//            throw new InvalidPasswordException();
+//        }
+        currentUserService.changePassword(passwordChangeDto.getCurrentPassword(), passwordChangeDto.getNewPassword());
     }
+}
