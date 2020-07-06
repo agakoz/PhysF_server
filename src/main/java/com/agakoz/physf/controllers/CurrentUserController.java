@@ -1,16 +1,18 @@
 package com.agakoz.physf.controllers;
 
-import com.agakoz.physf.model.DTO.CurrentUserAccountDTO;
-import com.agakoz.physf.model.DTO.CurrentUserDTO;
-import com.agakoz.physf.model.DTO.CurrentUserPersonalDTO;
-import com.agakoz.physf.model.DTO.PasswordChangeDTO;
+import com.agakoz.physf.model.DTO.*;
+import com.agakoz.physf.model.User;
 import com.agakoz.physf.repositories.UserRepository;
 import com.agakoz.physf.services.CurrentUserService;
-import com.agakoz.physf.services.exceptions.InvalidPasswordException;
+import com.agakoz.physf.services.MailService;
+import com.agakoz.physf.services.exceptions.CurrentUserException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.util.Optional;
 
 
 @RestController
@@ -18,11 +20,13 @@ import org.springframework.web.bind.annotation.*;
 public class CurrentUserController {
     private UserRepository userRepository;
     private CurrentUserService currentUserService;
+    private MailService mailService;
 
     @Autowired
-    public CurrentUserController(UserRepository userRepository, CurrentUserService currentUserService) {
+    public CurrentUserController(UserRepository userRepository, CurrentUserService currentUserService, MailService mailService) {
         this.userRepository = userRepository;
         this.currentUserService = currentUserService;
+        this.mailService = mailService;
     }
 
 
@@ -84,12 +88,7 @@ public class CurrentUserController {
         }
 
 
-    /**
-     * {@code POST  /change-password} : changes the current user's password.
-     *
-     * @param passwordChangeDto current and new password.
-     * @throws InvalidPasswordException {@code 400 (Bad Request)} if the new password is incorrect.
-     */
+
     @PostMapping(path = "/change-password")
     public void changePassword( PasswordChangeDTO passwordChangeDto) {
 //        if (!checkPasswordLength(passwordChangeDto.getNewPassword())) {
@@ -97,4 +96,38 @@ public class CurrentUserController {
 //        }
         currentUserService.changePassword(passwordChangeDto.getCurrentPassword(), passwordChangeDto.getNewPassword());
     }
+
+
+    @PostMapping("/register")
+    @ResponseStatus(HttpStatus.CREATED)
+    public void registerAccount(@Valid UserCreateDTO userCreateDTO) {
+
+        User user = currentUserService.registerUser(userCreateDTO);
+        mailService.sendActivationEmail(user);
+    }
+
+    /**
+     * {@code GET  /activate} : activate the registered user.
+     *
+     * @param key the activation key.
+     * @throws RuntimeException {@code 500 (Internal Server Error)} if the user couldn't be activated.
+     */
+    @GetMapping("/activate")
+    public ResponseEntity<String>  activateAccount(@RequestParam(value = "key") String key) {
+        try{
+            Optional<User> user = currentUserService.activateRegistration(key);
+            if (!user.isPresent()) {
+                throw new CurrentUserException("No user was found for this activation key");
+            }
+            return new ResponseEntity<>("the account has been activated", HttpStatus.OK);
+        }catch (CurrentUserException ex){
+            return new ResponseEntity<>(
+                    String.format("Error! %s", ex.getMessage()),
+                    HttpStatus.NOT_FOUND);
+        }
+
+    }
+
+
+
 }

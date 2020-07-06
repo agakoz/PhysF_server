@@ -44,35 +44,35 @@ public class User implements UserDetails {
     private String role;
 
     @Column
-    String name;
+    private String name;
 
     @Column
-    String surname;
+    private String surname;
 
     @Column
-    String company;
+    private  String company;
 
     @Column
-    String address;
+    private   String address;
 
     @Column
-    String city;
+    private  String city;
 
     @Column(name="licence_number", length = 50, unique = true)
-    String licenceNumber;
+    private  String licenceNumber;
 
     @Column
-    String specializations;
+    private  String specializations;
 
     @Column(name = "professional_title")
-    String professionalTitle;
+    private  String professionalTitle;
 
     @Column(name="birth_date")
-    Date birthDate;
+    private Date birthDate;
 
     @Column(length = 320, unique = true)
     @Email
-    String email;
+    private String email;
 
     @NotNull
     @Column(nullable = false)
@@ -113,5 +113,10 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+
+    public boolean getActivated() {
+        return activated;
     }
 }

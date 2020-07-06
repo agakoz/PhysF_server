@@ -69,7 +69,7 @@ public class MailService {
         try {
             MimeMessageHelper message = new MimeMessageHelper(mimeMessage, isMultipart, StandardCharsets.UTF_8.name());
             message.setTo(to);
-            message.setFrom(jHipsterProperties.getMail().getFrom());
+            message.setFrom("physfile@gmail.com");
             message.setSubject(subject);
             message.setText(content, isHtml);
             javaMailSender.send(mimeMessage);
@@ -78,20 +78,19 @@ public class MailService {
             log.warn("Email could not be sent to user '{}'", to, e);
         }
     }
-//TODO: LangKey, locale
+
     @Async
     public void sendEmailFromTemplate(User user, String templateName, String titleKey) {
         if (user.getEmail() == null) {
             log.debug("Email doesn't exist for user '{}'", user.getUsername());
             return;
         }
-//        Locale locale = Locale.forLanguageTag(user.getLangKey());
-        Locale locale = Locale.forLanguageTag("");
+
+        Locale locale = Locale.forLanguageTag("pl-PL");
         Context context = new Context(locale);
         context.setVariable(USER, user);
-        context.setVariable(BASE_URL, jHipsterProperties.getMail().getBaseUrl());
+        context.setVariable(BASE_URL, "https://localhost:8443");
         String content = templateEngine.process(templateName, context);
-//        String subject = messageSource.getMessage(titleKey, null, locale);
         String subject = messageSource.getMessage(titleKey, null, locale);
         sendEmail(user.getEmail(), subject, content, false, true);
     }

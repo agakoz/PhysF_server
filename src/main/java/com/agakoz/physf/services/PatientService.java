@@ -108,19 +108,6 @@ public class PatientService {
 
     }
 
-//    private User getCurrentUser() throws CurrentUserException {
-//        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//
-//        User currentUser;
-//        if (principal instanceof UserDetails) {
-//            currentUser = ((User) (principal));
-//
-//        } else {
-//            throw new CurrentUserException("");
-//
-//        }
-//        return currentUser;
-//    }
 
     private void checkPeselOrThrow(String pesel) throws PeselIsNullException, BadLengthPeselException,PersonWithPeselAlreadyExistsException, CurrentUserException {
         if (pesel == null) throw new PeselIsNullException();

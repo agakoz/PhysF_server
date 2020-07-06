@@ -1,10 +1,7 @@
 package com.agakoz.physf.model.DTO;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 import javax.persistence.Column;
 import javax.validation.constraints.NotNull;
@@ -15,6 +12,7 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @RequiredArgsConstructor
+@NoArgsConstructor
 public class UserDTO {
     int id;
     @NonNull

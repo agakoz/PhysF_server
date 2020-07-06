@@ -14,17 +14,17 @@ public class CurrentUserDTO {
     int id;
     @NonNull
     private String username;
-    String name;
-    String surname;
-    String company;
-    String address;
-    String city;
-    String licenceNumber;
-    String specializations;
-    String professionalTitle;
-    Date birthDate;
-    String email;
-
+    private String name;
+    private   String surname;
+    private   String company;
+    private  String address;
+    private  String city;
+    private  String licenceNumber;
+    private  String specializations;
+    private  String professionalTitle;
+    private   Date birthDate;
+    private   String email;
+    private boolean activated;
 }
 
 
