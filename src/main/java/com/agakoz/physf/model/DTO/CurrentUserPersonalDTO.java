@@ -1,7 +1,10 @@
 package com.agakoz.physf.model.DTO;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Data
@@ -20,8 +23,9 @@ public class CurrentUserPersonalDTO {
     String licenceNumber;
     String specializations;
     String professionalTitle;
-    @NonNull
-    Date birthDate;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    LocalDate birthDate;
     String email;
 
 }

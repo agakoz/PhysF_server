@@ -25,6 +25,7 @@
             <column name="professional_title" type="varchar(255)"/>
             <column name="birth_date" type="date"/>
             <column name="email" type="varchar(320)"/>
+            <column name="created_date" type="date"/>
 
         </createTable>
 

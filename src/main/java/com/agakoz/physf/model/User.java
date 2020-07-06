@@ -1,10 +1,12 @@
 package com.agakoz.physf.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,6 +16,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -68,7 +71,9 @@ public class User implements UserDetails {
     private  String professionalTitle;
 
     @Column(name="birth_date")
-    private Date birthDate;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate birthDate;
 
     @Column(length = 320, unique = true)
     @Email
@@ -88,6 +93,11 @@ public class User implements UserDetails {
     @JsonIgnore
     private String resetKey;
 
+    @NonNull
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    @Column(name="created_date")
+    private LocalDate createdDate;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
