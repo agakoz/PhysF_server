@@ -3,7 +3,7 @@ package com.agakoz.physf.controllers;
 import com.agakoz.physf.model.DTO.*;
 import com.agakoz.physf.model.User;
 import com.agakoz.physf.repositories.UserRepository;
-import com.agakoz.physf.services.CurrentUserService;
+import com.agakoz.physf.services.UserService;
 import com.agakoz.physf.services.MailService;
 import com.agakoz.physf.services.exceptions.UserException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,13 +19,13 @@ import java.util.Optional;
 @RequestMapping("/profile")
 public class CurrentUserController {
     private UserRepository userRepository;
-    private CurrentUserService currentUserService;
+    private UserService userService;
     private MailService mailService;
 
     @Autowired
-    public CurrentUserController(UserRepository userRepository, CurrentUserService currentUserService, MailService mailService) {
+    public CurrentUserController(UserRepository userRepository, UserService userService, MailService mailService) {
         this.userRepository = userRepository;
-        this.currentUserService = currentUserService;
+        this.userService = userService;
         this.mailService = mailService;
     }
 
@@ -33,7 +33,7 @@ public class CurrentUserController {
         @DeleteMapping("/delete")
         ResponseEntity<String> deleteUser (){
             try {
-                currentUserService.deleteCurrentUser();
+                userService.deleteCurrentUser();
                 return new ResponseEntity<>(
                         String.format("User deleted successfully"),
                         HttpStatus.OK);
@@ -50,7 +50,7 @@ public class CurrentUserController {
         @PutMapping("/update/account")
     ResponseEntity<String> updateUser(CurrentUserAccountDTO userAccountDTO) {
             try {
-                currentUserService.updateCurrentUserAccount(userAccountDTO);
+                userService.updateCurrentUserAccount(userAccountDTO);
                 return new ResponseEntity<>(
                         "user account info updated successfully",
                         HttpStatus.OK);
@@ -63,7 +63,7 @@ public class CurrentUserController {
     @PutMapping("/update/personal")
     ResponseEntity<String> updateUser(CurrentUserPersonalDTO userPersonalDTO) {
         try {
-            currentUserService.updateCurrentUserPersonal(userPersonalDTO);
+            userService.updateCurrentUserPersonal(userPersonalDTO);
             return new ResponseEntity<>(
                     "user personal info updated successfully",
                     HttpStatus.OK);
@@ -77,7 +77,7 @@ public class CurrentUserController {
         @GetMapping("/info")
     ResponseEntity<Object> getCurrentUser(){
             try {
-                CurrentUserDTO user = currentUserService.getCurrentUserDTO();
+                CurrentUserDTO user = userService.getCurrentUserDTO();
                 return new ResponseEntity<>(user, HttpStatus.OK);
             } catch (UserException ex) {
                 return new ResponseEntity<>(
@@ -94,7 +94,7 @@ public class CurrentUserController {
 //        if (!checkPasswordLength(passwordChangeDto.getNewPassword())) {
 //            throw new InvalidPasswordException();
 //        }
-        currentUserService.changePassword(passwordChangeDto.getCurrentPassword(), passwordChangeDto.getNewPassword());
+        userService.changePassword(passwordChangeDto.getCurrentPassword(), passwordChangeDto.getNewPassword());
     }
 
 
@@ -102,7 +102,7 @@ public class CurrentUserController {
     @ResponseStatus(HttpStatus.CREATED)
     public void registerAccount(@Valid UserCreateDTO userCreateDTO) {
 
-        User user = currentUserService.registerUser(userCreateDTO);
+        User user = userService.registerUser(userCreateDTO);
         mailService.sendActivationEmail(user);
     }
 
@@ -115,7 +115,7 @@ public class CurrentUserController {
     @GetMapping("/activate")
     public ResponseEntity<String>  activateAccount(@RequestParam(value = "key") String key) {
         try{
-            Optional<User> user = currentUserService.activateRegistration(key);
+            Optional<User> user = userService.activateRegistration(key);
             if (!user.isPresent()) {
                 throw new UserException("No user was found for this activation key");
             }
