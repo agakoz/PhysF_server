@@ -1,8 +1,6 @@
 package com.agakoz.physf.security;
 
 
-import com.agakoz.physf.model.User;
-import com.agakoz.physf.services.exceptions.CurrentUserException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;

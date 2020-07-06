@@ -33,7 +33,7 @@ public class PatientService {
         Patient newPatient = ObjectMapperUtils.map(patientDTO, new Patient());
         String currentUsername = SecurityUtils
                 .getCurrentUserUsername()
-                .orElseThrow(() -> new CurrentUserException("Current user login not found"));
+                .orElseThrow(() -> new UserException("Current user login not found"));
         User currentUser = userRepository.findByUsername(currentUsername).get();
         newPatient.setUser(currentUser);
         patientRepository.save(newPatient);
@@ -50,17 +50,17 @@ public class PatientService {
 
     }
 
-    public void deletePatient(int id) throws PatientWithIdNotExistsException, CurrentUserException {
+    public void deletePatient(int id) throws PatientWithIdNotExistsException, UserException {
         validatePatientIdForCurrentUser(id);
         Patient patientToDelete = getPatient(id);
         patientRepository.delete(patientToDelete);
 
     }
 
-    public void deleteAllPatientsFromCurrentUser() throws NoPatientsException, CurrentUserException {
+    public void deleteAllPatientsFromCurrentUser() throws NoPatientsException, UserException {
         String currentUsername = SecurityUtils
                 .getCurrentUserUsername()
-                .orElseThrow(() -> new CurrentUserException("Current user login not found"));
+                .orElseThrow(() -> new UserException("Current user login not found"));
         List<Integer> patientIds = patientRepository.getIdsByUserId(currentUsername);
         if (patientIds.isEmpty()) {
             throw new NoPatientsException();
@@ -68,10 +68,10 @@ public class PatientService {
         patientRepository.deleteAllFromUser(currentUsername);
     }
 
-    public List<PatientDTO> getAllPatientsFromCurrentUser() throws NoPatientsException, CurrentUserException {
+    public List<PatientDTO> getAllPatientsFromCurrentUser() throws NoPatientsException, UserException {
         String currentUsername = SecurityUtils
                 .getCurrentUserUsername()
-                .orElseThrow(() -> new CurrentUserException("Current user login not found"));
+                .orElseThrow(() -> new UserException("Current user login not found"));
         List<PatientDTO> patients = patientRepository.retrievePatientsDTOByUserId(currentUsername);
         if (patients.isEmpty()) {
             throw new NoPatientsException();
@@ -80,10 +80,10 @@ public class PatientService {
         }
     }
 
-    public PatientDTO getPatientByIdFromCurrentUser(int patientId) throws PatientWithIdNotExistsException, CurrentUserException {
+    public PatientDTO getPatientByIdFromCurrentUser(int patientId) throws PatientWithIdNotExistsException, UserException {
         String currentUsername = SecurityUtils
                 .getCurrentUserUsername()
-                .orElseThrow(() -> new CurrentUserException("Current user login not found"));
+                .orElseThrow(() -> new UserException("Current user login not found"));
         Optional<PatientDTO> patient = patientRepository.retrievePatientDTOByUsernameAndPatientId(currentUsername, patientId);
         if (patient.isPresent()) {
             return patient.get();
@@ -109,36 +109,36 @@ public class PatientService {
     }
 
 
-    private void checkPeselOrThrow(String pesel) throws PeselIsNullException, BadLengthPeselException,PersonWithPeselAlreadyExistsException, CurrentUserException {
+    private void checkPeselOrThrow(String pesel) throws PeselIsNullException, BadLengthPeselException,PersonWithPeselAlreadyExistsException, UserException {
         if (pesel == null) throw new PeselIsNullException();
         if (!isPeselUnique(pesel)) throw new PersonWithPeselAlreadyExistsException("User");
         if (!isPeselOfGoodLength(pesel)) throw new BadLengthPeselException();
     }
 
-    private void checkPeselForExistingUserOrThrow(int patientId, String pesel) throws IllegalArgumentException, CurrentUserException {
+    private void checkPeselForExistingUserOrThrow(int patientId, String pesel) throws IllegalArgumentException, UserException {
         if (pesel == null) throw new PeselIsNullException();
         if (!isPeselUnique(pesel, patientId)) throw new PersonWithPeselAlreadyExistsException("User");
         if (!isPeselOfGoodLength(pesel)) throw new BadLengthPeselException();
     }
 
-    private boolean isPeselUnique(String pesel) throws CurrentUserException {
+    private boolean isPeselUnique(String pesel) throws UserException {
 
         if (pesel.length() > 0) {
             String currentUsername = SecurityUtils
                     .getCurrentUserUsername()
-                    .orElseThrow(() -> new CurrentUserException("Current user login not found"));
+                    .orElseThrow(() -> new UserException("Current user login not found"));
             List<Integer> patientsWithTheSamePesel = patientRepository.findByPesel(pesel, currentUsername);
             return patientsWithTheSamePesel.size() == 0;
         }
         return false;
     }
 
-    private boolean isPeselUnique(String pesel, int patientId) throws CurrentUserException {
+    private boolean isPeselUnique(String pesel, int patientId) throws UserException {
 
         if (pesel.length() > 0) {
             String currentUsername = SecurityUtils
                     .getCurrentUserUsername()
-                    .orElseThrow(() -> new CurrentUserException("Current user login not found"));
+                    .orElseThrow(() -> new UserException("Current user login not found"));
             List<Integer> patientsWithTheSamePesel = patientRepository.findByPesel(pesel, currentUsername);
 
             return patientsWithTheSamePesel.size() == 1 && patientsWithTheSamePesel.contains(patientId);
@@ -151,10 +151,10 @@ public class PatientService {
         return pesel.length() == 11;
     }
 
-    public void validatePatientIdForCurrentUser(int patientId) throws PatientWithIdNotExistsException, CurrentUserException {
+    public void validatePatientIdForCurrentUser(int patientId) throws PatientWithIdNotExistsException, UserException {
         String currentUsername = SecurityUtils
                 .getCurrentUserUsername()
-                .orElseThrow(() -> new CurrentUserException("Current user login not found"));
+                .orElseThrow(() -> new UserException("Current user login not found"));
         List<Integer> patients = patientRepository.getByIdAndCurrent(patientId, currentUsername);
         if (patients.size() == 0)
             throw new PatientWithIdNotExistsException(patientId);

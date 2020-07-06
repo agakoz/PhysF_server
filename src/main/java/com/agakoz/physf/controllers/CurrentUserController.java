@@ -5,7 +5,7 @@ import com.agakoz.physf.model.User;
 import com.agakoz.physf.repositories.UserRepository;
 import com.agakoz.physf.services.CurrentUserService;
 import com.agakoz.physf.services.MailService;
-import com.agakoz.physf.services.exceptions.CurrentUserException;
+import com.agakoz.physf.services.exceptions.UserException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +33,7 @@ public class CurrentUserController {
         @DeleteMapping("/delete")
         ResponseEntity<String> deleteUser (){
             try {
-                currentUserService.deleteUser();
+                currentUserService.deleteCurrentUser();
                 return new ResponseEntity<>(
                         String.format("User deleted successfully"),
                         HttpStatus.OK);
@@ -79,7 +79,7 @@ public class CurrentUserController {
             try {
                 CurrentUserDTO user = currentUserService.getCurrentUserDTO();
                 return new ResponseEntity<>(user, HttpStatus.OK);
-            } catch (Exception ex) {
+            } catch (UserException ex) {
                 return new ResponseEntity<>(
                         String.format("Error! %s", ex.getMessage()),
                         HttpStatus.NOT_FOUND);
@@ -117,10 +117,10 @@ public class CurrentUserController {
         try{
             Optional<User> user = currentUserService.activateRegistration(key);
             if (!user.isPresent()) {
-                throw new CurrentUserException("No user was found for this activation key");
+                throw new UserException("No user was found for this activation key");
             }
             return new ResponseEntity<>("the account has been activated", HttpStatus.OK);
-        }catch (CurrentUserException ex){
+        }catch (UserException ex){
             return new ResponseEntity<>(
                     String.format("Error! %s", ex.getMessage()),
                     HttpStatus.NOT_FOUND);

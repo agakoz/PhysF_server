@@ -50,14 +50,14 @@ public class VisitService {
         }
     }
 
-    public List<VisitWithPhotosDTO> getAllVisits() throws CurrentUserException, NoVisitsException {
+    public List<VisitWithPhotosDTO> getAllVisits() throws UserException, NoVisitsException {
         List<VisitDTO> visitList = visitRepository.retrieveVisitDTOsByUserId(getCurrentUser().getId());
         List<VisitWithPhotosDTO> visitsWithPhotos = getPhotosForVisitList(visitList);
         return visitsWithPhotos;
     }
 
 
-    public List<VisitWithPhotosDTO> getPatientVisits(int patientId) throws CurrentUserException, NoVisitsException, PatientWithIdNotExistsException {
+    public List<VisitWithPhotosDTO> getPatientVisits(int patientId) throws UserException, NoVisitsException, PatientWithIdNotExistsException {
         patientService.validatePatientIdForCurrentUser(patientId);
         List<VisitDTO> visitList = visitRepository.retrieveVisitDTOsByUserIdPatientId(getCurrentUser().getId(), patientId);
         List<VisitWithPhotosDTO> visitsWithPhotos = getPhotosForVisitList(visitList);
@@ -66,7 +66,7 @@ public class VisitService {
 
 
     //swagger nie obsluguje  multipartfile array- nie przesyła ich do kontrolera
-    public void addNewVisit(VisitCreateUpdateDTO visitDTO, MultipartFile[] photos) throws IOException, CurrentUserException, PatientWithIdNotExistsException {
+    public void addNewVisit(VisitCreateUpdateDTO visitDTO, MultipartFile[] photos) throws IOException, UserException, PatientWithIdNotExistsException {
 
         Visit newVisit = ObjectMapperUtils.map(visitDTO, new Visit());
         newVisit.setUser(getCurrentUser());
@@ -105,7 +105,7 @@ public class VisitService {
     }
 //planned visits:
 
-    public List<VisitPlanDTO> getAllPlannedVisits() throws CurrentUserException, NoVisitsException {
+    public List<VisitPlanDTO> getAllPlannedVisits() throws UserException, NoVisitsException {
         List<VisitPlanDTO> plannedVisits = visitRepository.retrieveVisitPlanDTOsByUserId(getCurrentUser().getId());
         if (plannedVisits.size() > 0) {
             return plannedVisits;
@@ -152,7 +152,7 @@ public class VisitService {
 
 
     //todo move it to separate class
-    private User getCurrentUser() throws CurrentUserException {
+    private User getCurrentUser() throws UserException {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         User currentUser;
@@ -160,7 +160,7 @@ public class VisitService {
             currentUser = ((User) (principal));
 
         } else {
-            throw new CurrentUserException("");
+            throw new UserException("");
 
         }
         return currentUser;

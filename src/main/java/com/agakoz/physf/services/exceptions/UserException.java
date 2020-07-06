@@ -1,9 +1,9 @@
 package com.agakoz.physf.services.exceptions;
 
-public class CurrentUserException extends RuntimeException {
+public class UserException extends RuntimeException {
 //    private static final String exceptionMsg = "Current user problem";
 
-    public CurrentUserException(String msg) {
+    public UserException(String msg) {
         super(msg);
     }
 }

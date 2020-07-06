@@ -6,6 +6,7 @@ import com.agakoz.physf.model.Patient;
 import com.agakoz.physf.model.User;
 import com.agakoz.physf.repositories.UserRepository;
 import com.agakoz.physf.services.exceptions.EmailAlreadyUsedException;
+import com.agakoz.physf.services.exceptions.UserException;
 import com.agakoz.physf.services.exceptions.UsernameAlreadyUsedException;
 import io.github.jhipster.security.RandomUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,15 +31,35 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    // TODO  user validation
-    public void createAndAddUser(User user) throws Exception {
 
-        String encodePassword = getEncodedPassword(user);
-        user.setPassword(encodePassword);
+    public List<UserDTO> getAllUsers() throws UserException {
+        List<UserDTO> users = userRepository.retrieveAllUserAsDTO();
+        if (users.isEmpty()) {
+            throw new UserException("No users.");
+        } else {
+            return users;
+        }
+    }
 
-        user.setRole("ROLE_USER");
+    public UserDTO getUserById(int id) throws UserException {
 
+        Optional<UserDTO> userOpt = userRepository.retrieveUserAsDTOById(id);
+        if (userOpt.isPresent())
+            return userOpt.get();
+        else throw new UserException(String.format("User with id = %d not found", id));
+
+    }
+
+
+    public void updateUser(int id, User user) throws UserException {
+        userExistsOrThrow(id);
         userRepository.save(user);
+
+    }
+
+    public void deleteUserById(int id) throws UserException {
+
+        userRepository.delete(getExistingUser(id));
     }
 
     private String getEncodedPassword(User user) {
@@ -46,49 +67,21 @@ public class UserService {
         return passwordEncoder.encode(password);
     }
 
-    public List<UserDTO> getAllUsers() throws IOException {
-        List<UserDTO> users = userRepository.retrieveAllUserAsDTO();
-        if (users.isEmpty()) {
-            throw new IOException("No users.");
-        } else {
-            return users;
-        }
-    }
-
-    public UserDTO getUserById(int id) throws IOException {
-        userExistsOrThrow(id);
-        return userRepository.retrieveUserAsDTOById(id);
-
-    }
-
-
-    public void updateUser(int id, User user) throws IOException {
-        userExistsOrThrow(id);
-        userRepository.save(user);
-
-    }
-
-    public void deleteUser(int id) throws IOException {
-
-        userRepository.delete(getExistingUser(id));
-    }
-
     private boolean userExists(int id) {
         Optional<User> user = userRepository.findById(id);
         return user.isPresent();
     }
 
-    private void userExistsOrThrow(int id) throws IOException {
+    private void userExistsOrThrow(int id) throws UserException {
         if (!userExists(id))
-            throw new IOException(String.format("No user with id=\"%d\".", id));
+            throw new UserException(String.format("No user with id=\"%d\".", id));
     }
 
-    private User getExistingUser(int id) throws IOException {
+    private User getExistingUser(int id) throws UserException {
         userExistsOrThrow(id);
         return userRepository.findById(id).get();
 
     }
-
 
 
 }

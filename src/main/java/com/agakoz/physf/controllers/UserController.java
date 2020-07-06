@@ -6,9 +6,7 @@ import com.agakoz.physf.repositories.UserRepository;
 import com.agakoz.physf.security.AuthoritiesConstants;
 import com.agakoz.physf.services.MailService;
 import com.agakoz.physf.services.UserService;
-import com.agakoz.physf.services.exceptions.EmailAlreadyUsedException;
-import com.agakoz.physf.services.exceptions.UsernameAlreadyUsedException;
-import io.github.jhipster.web.util.HeaderUtil;
+import com.agakoz.physf.services.exceptions.UserException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 
 @RestController
@@ -48,7 +43,7 @@ public class UserController {
             List<UserDTO> userList = userService.getAllUsers();
             return new ResponseEntity<>(userList, HttpStatus.OK);
 
-        } catch (IOException ex) {
+        } catch (UserException ex) {
             return new ResponseEntity<>(
                     String.format("Error! %s", ex.getMessage()),
                     HttpStatus.NOT_FOUND);
@@ -61,7 +56,7 @@ public class UserController {
         try {
             UserDTO user = userService.getUserById(id);
             return new ResponseEntity<>(user, HttpStatus.OK);
-        } catch (IOException ex) {
+        } catch (UserException ex) {
             return new ResponseEntity<>(
                     String.format("Error! %s", ex.getMessage()),
                     HttpStatus.NOT_FOUND);
@@ -72,12 +67,12 @@ public class UserController {
     @DeleteMapping("/{id}")
     ResponseEntity<String> deleteUser(@PathVariable Integer id) {
         try {
-            userService.deleteUser(id);
+            userService.deleteUserById(id);
             return new ResponseEntity<>(
                     String.format("User with id= \"%d\" deleted successfully", id),
                     HttpStatus.OK);
 
-        } catch (IOException ex) {
+        } catch (UserException ex) {
             return new ResponseEntity<>(
                     String.format("Error deleting! %s", ex.getMessage()),
                     HttpStatus.CONFLICT);
@@ -92,7 +87,7 @@ public class UserController {
             return new ResponseEntity<>(
                     "user updated successfully",
                     HttpStatus.OK);
-        } catch (IOException ex) {
+        } catch (UserException ex) {
             return new ResponseEntity<>(
                     "Update failed! " + ex.getMessage(),
                     HttpStatus.NOT_FOUND);

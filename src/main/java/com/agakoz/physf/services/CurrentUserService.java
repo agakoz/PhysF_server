@@ -11,17 +11,17 @@ import com.agakoz.physf.repositories.UserRepository;
 import com.agakoz.physf.security.SecurityUtils;
 import com.agakoz.physf.services.exceptions.*;
 import com.agakoz.physf.utils.ObjectMapperUtils;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.jhipster.security.RandomUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 @Service
@@ -40,20 +40,19 @@ public class CurrentUserService {
     }
 
 
-    public CurrentUserDTO getCurrentUserDTO() throws CurrentUserException {
+    public CurrentUserDTO getCurrentUserDTO() throws UserException {
         String currentUsername = SecurityUtils
                 .getCurrentUserUsername()
-                .orElseThrow(() -> new CurrentUserException("Current user login not found"));
+                .orElseThrow(() -> new UserException("Current user login not found"));
         CurrentUserDTO currentUserDTO = userRepository.retrieveCurrentUserAsDTOByUsername(currentUsername);
         return currentUserDTO;
 
     }
 
-
-    public void updateCurrentUserAccount(CurrentUserAccountDTO userAccountDTO) throws CurrentUserException {
+    public void updateCurrentUserAccount(CurrentUserAccountDTO userAccountDTO) throws UserException {
         String currentUsername = SecurityUtils
                 .getCurrentUserUsername()
-                .orElseThrow(() -> new CurrentUserException("Current user login not found"));
+                .orElseThrow(() -> new UserException("Current user login not found"));
         Optional<User> userOpt = userRepository.findByUsername(currentUsername);
         if (userOpt.isPresent()) {
             validateUsername(userAccountDTO.getUsername());
@@ -64,10 +63,10 @@ public class CurrentUserService {
         }
     }
 
-    public void updateCurrentUserPersonal(CurrentUserPersonalDTO userPersonalDTO) throws CurrentUserException {
+    public void updateCurrentUserPersonal(CurrentUserPersonalDTO userPersonalDTO) throws UserException {
         String currentUsername = SecurityUtils
                 .getCurrentUserUsername()
-                .orElseThrow(() -> new CurrentUserException("Current user login not found"));
+                .orElseThrow(() -> new UserException("Current user login not found"));
         Optional<User> userOpt = userRepository.findByUsername(currentUsername);
         if (userOpt.isPresent()) {
             User user = userOpt.get();
@@ -78,9 +77,10 @@ public class CurrentUserService {
         }
     }
 
-    public void deleteUser() throws CurrentUserException {
+    public void deleteCurrentUser() throws UserException {
         userRepository.deleteByUsername(SecurityUtils.getCurrentUserUsername());
     }
+
     @Transactional
     public void changePassword(String currentClearTextPassword, String newPassword) {
         SecurityUtils
@@ -100,7 +100,6 @@ public class CurrentUserService {
     }
 
 
-
     public User registerUser(UserCreateDTO userCreateDTO) {
         userRepository
                 .findByUsername(userCreateDTO.getUsername().toLowerCase())
@@ -117,7 +116,7 @@ public class CurrentUserService {
                 .ifPresent(
                         existingUser -> {
 
-                                throw new EmailAlreadyUsedException();
+                            throw new EmailAlreadyUsedException();
 
                         }
                 );
@@ -141,6 +140,22 @@ public class CurrentUserService {
         return newUser;
     }
 
+    public Optional<User> activateRegistration(String key) {
+        log.debug("Activating user for activation key {}", key);
+
+        return userRepository
+                .findOneByActivationKey(key)
+                .map(
+                        user -> {
+                            // activate given user for the registration key.
+                            user.setActivated(true);
+                            user.setActivationKey(null);
+                            userRepository.save(user);
+                            log.debug("Activated user: {}", user);
+                            return user;
+                        }
+                );
+    }
 
     private void validateUsername(String username) throws UsernameIsNullException, UsernameAlreadyUsedException, UsernameTooShortException {
         if (username == null) throw new UsernameIsNullException();
@@ -148,7 +163,7 @@ public class CurrentUserService {
         if (userByUsername.isPresent()) {
             String currentUsername = SecurityUtils
                     .getCurrentUserUsername()
-                    .orElseThrow(() -> new CurrentUserException("Current user login not found"));
+                    .orElseThrow(() -> new UserException("Current user login not found"));
             if (userByUsername.get().equals(userRepository.findByUsername(currentUsername).get()))
                 throw new UsernameAlreadyUsedException(username);
         }
@@ -169,22 +184,22 @@ public class CurrentUserService {
         userRepository.flush();
         return true;
     }
-
-
-    public Optional<User> activateRegistration(String key) {
-        log.debug("Activating user for activation key {}", key);
-
-        return userRepository
-                .findOneByActivationKey(key)
-                .map(
+    /**
+     * Not activated users should be automatically deleted after 3 days.
+     * <p>
+     * This is scheduled to get fired everyday, at 01:00 (am).
+     */
+    @Scheduled(cron = "0 0 1 * * ?")
+    public void removeNotActivatedUsers() {
+        userRepository
+                .findAllByActivatedIsFalseAndActivationKeyIsNotNullAndCreatedDateBefore(Instant.now().minus(3, ChronoUnit.DAYS))
+                .forEach(
                         user -> {
-                            // activate given user for the registration key.
-                            user.setActivated(true);
-                            user.setActivationKey(null);
-userRepository.save(user);
-                            log.debug("Activated user: {}", user);
-                            return user;
+                            log.debug("Deleting not activated user {}", user.getUsername());
+                            userRepository.delete(user);
+
                         }
                 );
     }
+
 }
