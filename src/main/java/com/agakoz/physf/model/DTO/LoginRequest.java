@@ -2,16 +2,18 @@ package com.agakoz.physf.model.DTO;
 
 import lombok.*;
 
+import javax.validation.constraints.NotBlank;
 import java.util.Date;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CurrentUserAccountDTO {
+public class LoginRequest {
 
-    @NonNull
+
+    @NotBlank
     private String username;
-    @NonNull
+    @NotBlank
     private String password;
 
 

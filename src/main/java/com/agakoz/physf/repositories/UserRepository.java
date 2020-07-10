@@ -1,7 +1,7 @@
 package com.agakoz.physf.repositories;
 
 
-import com.agakoz.physf.model.DTO.CurrentUserAccountDTO;
+import com.agakoz.physf.model.DTO.LoginRequest;
 import com.agakoz.physf.model.DTO.CurrentUserDTO;
 import com.agakoz.physf.model.DTO.CurrentUserPersonalDTO;
 import com.agakoz.physf.model.DTO.UserDTO;
@@ -33,8 +33,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query("SELECT new com.agakoz.physf.model.DTO.CurrentUserPersonalDTO(u.name, u.surname, u.company, u.address, u.city, u.licenceNumber, u.specializations, u.professionalTitle, u.birthDate, u.email ) FROM User u WHERE u.id = :userId")
     CurrentUserPersonalDTO retrieveUserPersonalAsDTOById(@Param("userId") int userId);
 
-    @Query("SELECT new com.agakoz.physf.model.DTO.CurrentUserAccountDTO(u.username, u.password ) FROM User u WHERE u.id = :userId")
-    CurrentUserAccountDTO retrieveUserAccountAsDTOByUserId(@Param("userId") int userId);
+//    @Query("SELECT new com.agakoz.physf.model.DTO.CurrentUserAccountDTO(u.username, u.password ) FROM User u WHERE u.id = :userId")
+//    LoginRequest retrieveUserAccountAsDTOByUserId(@Param("userId") int userId);
 
     Optional<User> findOneWithAuthoritiesByEmailIgnoreCase(String email);
 

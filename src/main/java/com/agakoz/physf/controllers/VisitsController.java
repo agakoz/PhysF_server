@@ -17,7 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.sql.Date;
 import java.util.List;
-
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/visits")
 public class VisitsController {

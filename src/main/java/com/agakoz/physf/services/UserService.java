@@ -48,7 +48,7 @@ public class UserService {
 
     }
 
-    public void updateCurrentUserAccount(CurrentUserAccountDTO userAccountDTO) throws UserException {
+    public void updateCurrentUserAccount(LoginRequest userAccountDTO) throws UserException {
         String currentUsername = SecurityUtils
                 .getCurrentUserUsername()
                 .orElseThrow(() -> new UserException("Current user login not found"));
@@ -171,7 +171,7 @@ public class UserService {
             throw new UsernameTooShortException();
     }
 
-    private String getEncodedPassword(CurrentUserAccountDTO userAccountDTO) {
+    private String getEncodedPassword(LoginRequest userAccountDTO) {
         String password = userAccountDTO.getPassword();
         return passwordEncoder.encode(password);
     }
