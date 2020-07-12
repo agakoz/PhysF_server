@@ -43,7 +43,7 @@ public class AuthController {
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public void registerAccount(@Valid UserCreateDTO userCreateDTO) {
+    public void registerAccount(@Valid @RequestBody UserCreateDTO userCreateDTO) {
 
         User user = userService.registerUser(userCreateDTO);
         mailService.sendActivationEmail(user);
