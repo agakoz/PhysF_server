@@ -1,6 +1,10 @@
 package com.agakoz.physf.model.DTO;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -28,6 +32,8 @@ public class UserCreateDTO {
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @JsonFormat(pattern = "yyyy-MM-dd")
+//    @JsonSerialize(using = LocalDateSerializer.class)
+//    @JsonDeserialize(using = LocalDateDeserializer.class)
     private LocalDate birthDate;
     private String email;
 
