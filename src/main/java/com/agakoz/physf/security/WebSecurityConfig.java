@@ -13,6 +13,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.header.writers.StaticHeadersWriter;
 
 @Configuration
 @EnableWebSecurity
@@ -61,7 +62,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.httpBasic().disable();
         http.csrf().disable();
 //        http.headers().disable();
-
+        http.headers()
+                .addHeaderWriter(
+                        new StaticHeadersWriter("Access-Control-Allow-Origin", "http://localhost:4200")
+                );
 //https
         http.requiresChannel()
                 .anyRequest()
@@ -73,8 +77,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/plannedVisits/**").hasAuthority("ROLE_USER")
                 .antMatchers("/visits/**").hasAuthority("ROLE_USER")
                 .antMatchers("/questionGroups/**").hasAuthority("ROLE_USER")
-
-
                 .and()
                 .formLogin().defaultSuccessUrl("/profile/info");
 //                .and()

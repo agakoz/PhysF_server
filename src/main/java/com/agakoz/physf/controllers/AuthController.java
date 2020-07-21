@@ -31,7 +31,6 @@ public class AuthController {
     private final UserService userService;
     private final MailService mailService;
     private final AuthenticationManager authenticationManager;
-    private final UserDetailsServiceImpl userDetailsService;
     private final JwtUtils jwtUtils;
 
 
@@ -39,13 +38,12 @@ public class AuthController {
         this.userService = userService;
         this.mailService = mailService;
         this.authenticationManager = authenticationManager;
-        this.userDetailsService = userDetailsService;
         this.jwtUtils = jwt;
     }
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-//    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class)
     @SneakyThrows
     public void registerAccount(@Valid @RequestBody UserCreateDTO userCreateDTO) {
         System.out.println("rejestracja");

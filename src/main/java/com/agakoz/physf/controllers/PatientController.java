@@ -19,18 +19,17 @@ import java.util.List;
 @RestController
 @RequestMapping("/patients")
 public class PatientController {
-    PatientRepository patientRepository;
-    PatientService patientService;
+    private final PatientService patientService;
 
     @Autowired
-    public PatientController(PatientRepository patientRepository, PatientService patientService) {
-        this.patientRepository = patientRepository;
+    public PatientController( PatientService patientService) {
         this.patientService = patientService;
     }
 
     @GetMapping("/all")
     public ResponseEntity<Object> getAllPatientFromCurrentUser() {
         try {
+            System.out.println("all patients");
             List<PatientDTO> patients = patientService.getAllPatientsFromCurrentUser();
             return new ResponseEntity<>(patients, HttpStatus.OK);
         } catch (Exception ex) {

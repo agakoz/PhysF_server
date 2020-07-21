@@ -28,9 +28,10 @@ public class PhysfApplication {
 		return new WebMvcConfigurer() {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
-				registry.addMapping("/login").allowedOrigins("http://localhost:4200");
 				registry.addMapping("/").allowedOrigins("http://localhost:4200");
+				registry.addMapping("/login").allowedOrigins("http://localhost:4200");
 				registry.addMapping("/auth/**").allowedOrigins("http://localhost:4200");
+				registry.addMapping("/patients/**").allowedOrigins("http://localhost:4200");
 
 			}
 		};
