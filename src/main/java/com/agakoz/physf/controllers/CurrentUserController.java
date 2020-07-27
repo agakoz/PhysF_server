@@ -5,9 +5,11 @@ import com.agakoz.physf.repositories.UserRepository;
 import com.agakoz.physf.services.UserService;
 import com.agakoz.physf.services.MailService;
 import com.agakoz.physf.services.exceptions.UserException;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin(origins = "http://localhost:4200")
@@ -26,36 +28,36 @@ public class CurrentUserController {
     }
 
 
-        @DeleteMapping("/delete")
-        ResponseEntity<String> deleteUser (){
-            try {
-                userService.deleteCurrentUser();
-                return new ResponseEntity<>(
-                        String.format("User deleted successfully"),
-                        HttpStatus.OK);
+    @DeleteMapping("/delete")
+    ResponseEntity<String> deleteUser() {
+        try {
+            userService.deleteCurrentUser();
+            return new ResponseEntity<>(
+                    String.format("User deleted successfully"),
+                    HttpStatus.OK);
 
-            } catch (Exception ex) {
-                return new ResponseEntity<>(
-                        String.format("Error deleting! %s", ex.getMessage()),
-                        HttpStatus.CONFLICT);
-            }
+        } catch (Exception ex) {
+            return new ResponseEntity<>(
+                    String.format("Error deleting! %s", ex.getMessage()),
+                    HttpStatus.CONFLICT);
         }
+    }
 
 
-
-        @PutMapping("/update/account")
+    @PutMapping("/update/account")
     ResponseEntity<String> updateUser(LoginRequest userAccountDTO) {
-            try {
-                userService.updateCurrentUserAccount(userAccountDTO);
-                return new ResponseEntity<>(
-                        "user account info updated successfully",
-                        HttpStatus.OK);
-            } catch (Exception ex) {
-                return new ResponseEntity<>(
-                        "Update failed! " + ex.getMessage(),
-                        HttpStatus.NOT_FOUND);
-            }
+        try {
+            userService.updateCurrentUserAccount(userAccountDTO);
+            return new ResponseEntity<>(
+                    "user account info updated successfully",
+                    HttpStatus.OK);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(
+                    "Update failed! " + ex.getMessage(),
+                    HttpStatus.NOT_FOUND);
         }
+    }
+
     @PutMapping("/update/personal")
     ResponseEntity<String> updateUser(CurrentUserPersonalDTO userPersonalDTO) {
         try {
@@ -70,23 +72,29 @@ public class CurrentUserController {
         }
     }
 
-        @GetMapping("/info")
-    ResponseEntity<Object> getCurrentUser(){
-            try {
-                CurrentUserDTO user = userService.getCurrentUserDTO();
-                return new ResponseEntity<>(user, HttpStatus.OK);
-            } catch (UserException ex) {
-                return new ResponseEntity<>(
-                        String.format("Error! %s", ex.getMessage()),
-                        HttpStatus.NOT_FOUND);
+    @GetMapping("/info")
+    @SneakyThrows
+    @ResponseStatus(HttpStatus.OK)
+    public CurrentUserDTO getCurrentUser() {
+//        try {
+//            System.out.println("info");
+            CurrentUserDTO user = userService.getCurrentUserDTO();
+            System.out.println(user);
+            return user;
+//            return new ResponseEntity<>(user, HttpStatus.OK);
+//        } catch (UserException ex) {
+//            return new ResponseEntity<>(
+//                    String.format("Error! %s", ex.getMessage()),
+//                    HttpStatus.NOT_FOUND);
+//
+//        }
+    }
 
-            }
-        }
 
 
 
     @PostMapping(path = "/change-password")
-    public void changePassword( PasswordChangeDTO passwordChangeDto) {
+    public void changePassword(PasswordChangeDTO passwordChangeDto) {
 //        if (!checkPasswordLength(passwordChangeDto.getNewPassword())) {
 //            throw new InvalidPasswordException();
 //        }
@@ -123,7 +131,6 @@ public class CurrentUserController {
 //        }
 //
 //    }
-
 
 
 }

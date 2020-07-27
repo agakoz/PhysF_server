@@ -1,10 +1,13 @@
 package com.agakoz.physf.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import org.hibernate.annotations.GeneratorType;
 import org.hibernate.engine.jdbc.Size;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -34,7 +37,9 @@ public class Patient {
 
     @Column(name = "birth_date")
     @NonNull
-    private Date birthDate;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate birthDate;
 
     @Column(length = 12)
     @NonNull

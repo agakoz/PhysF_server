@@ -2,39 +2,32 @@ package com.agakoz.physf.controllers;
 
 import com.agakoz.physf.model.DTO.PatientCreateOrUpdateDTO;
 import com.agakoz.physf.model.DTO.PatientDTO;
-import com.agakoz.physf.model.Patient;
-import com.agakoz.physf.model.User;
-import com.agakoz.physf.repositories.PatientRepository;
 import com.agakoz.physf.services.PatientService;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.List;
+
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
-@RequestMapping("/patients")
+@RequestMapping("/patient")
 public class PatientController {
     private final PatientService patientService;
 
     @Autowired
-    public PatientController( PatientService patientService) {
+    public PatientController(PatientService patientService) {
         this.patientService = patientService;
     }
 
     @GetMapping("/all")
+    @SneakyThrows
     public ResponseEntity<Object> getAllPatientFromCurrentUser() {
-        try {
-            System.out.println("all patients");
-            List<PatientDTO> patients = patientService.getAllPatientsFromCurrentUser();
-            return new ResponseEntity<>(patients, HttpStatus.OK);
-        } catch (Exception ex) {
-            return new ResponseEntity<>(String.format("Error! %s", ex.getMessage()), HttpStatus.NOT_FOUND);
-        }
+
+        List<PatientDTO> patients = patientService.getAllPatientsFromCurrentUser();
+        return new ResponseEntity<>(patients, HttpStatus.OK);
     }
 
 
@@ -47,8 +40,9 @@ public class PatientController {
             return new ResponseEntity<>(String.format("Error! %s", ex.getMessage()), HttpStatus.NOT_FOUND);
         }
     }
+
     @PostMapping("/add")
-    public ResponseEntity<Object> addPatient(PatientCreateOrUpdateDTO patient){
+    public ResponseEntity<Object> addPatient(PatientCreateOrUpdateDTO patient) {
         try {
             patientService.addPatient(patient);
             return new ResponseEntity<>(patient, HttpStatus.CREATED);
@@ -56,28 +50,30 @@ public class PatientController {
             return new ResponseEntity<>(String.format("Error! %s", ex.getMessage()), HttpStatus.NOT_FOUND);
         }
     }
+
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deletePatientById(@PathVariable int id){
-        try{
+    public ResponseEntity<String> deletePatientById(@PathVariable int id) {
+        try {
+
             patientService.deletePatient(id);
             return new ResponseEntity<>("User deleted successfully", HttpStatus.OK);
-        } catch (Exception ex){
+        } catch (Exception ex) {
             return new ResponseEntity<>(String.format("Error! %s", ex.getMessage()), HttpStatus.NOT_FOUND);
 
         }
     }
+
     @DeleteMapping("/delete/all")
-    public ResponseEntity<String> deleteAllPatientsFromCurrentUser(){
-        try{
-            patientService.deleteAllPatientsFromCurrentUser();
-            return new ResponseEntity<>("User deleted successfully", HttpStatus.OK);
-        } catch (Exception ex){
-            return new ResponseEntity<>(String.format("Error! %s", ex.getMessage()), HttpStatus.NOT_FOUND);
+    @SneakyThrows
+    public ResponseEntity<String> deleteAllPatientsFromCurrentUser() {
 
-        }
+        patientService.deleteAllPatientsFromCurrentUser();
+        return new ResponseEntity<>("User deleted successfully", HttpStatus.OK);
+
     }
+
     @PutMapping("update/{id}")
-    ResponseEntity<String> updatePatient(@PathVariable int id,  PatientCreateOrUpdateDTO patient) {
+    ResponseEntity<String> updatePatient(@PathVariable int id, PatientCreateOrUpdateDTO patient) {
         try {
 
             patientService.updatePatient(id, patient);

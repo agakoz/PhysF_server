@@ -22,18 +22,17 @@ public class PhysfApplication {
 		return new ModelMapper();
 	}
 
-
-	@Bean
-	public WebMvcConfigurer corsConfigurer() {
-		return new WebMvcConfigurer() {
-			@Override
-			public void addCorsMappings(CorsRegistry registry) {
-				registry.addMapping("/").allowedOrigins("http://localhost:4200");
-				registry.addMapping("/login").allowedOrigins("http://localhost:4200");
-				registry.addMapping("/auth/**").allowedOrigins("http://localhost:4200");
-				registry.addMapping("/patients/**").allowedOrigins("http://localhost:4200");
-
-			}
-		};
-	}
+//
+//	@Bean
+//	public WebMvcConfigurer corsConfigurer() {
+//		return new WebMvcConfigurer() {
+//			@Override
+//			public void addCorsMappings(CorsRegistry registry) {
+//				registry.addMapping("/").allowedOrigins("http://localhost:4200");
+//				registry.addMapping("/login").allowedOrigins("http://localhost:4200");
+//				registry.addMapping("/auth/**").allowedOrigins("http://localhost:4200");
+//				registry.addMapping("/patients/**").allowedOrigins("http://localhost:4200").allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS").exposedHeaders("Authorization");
+//			}
+//		};
+//	}
 }

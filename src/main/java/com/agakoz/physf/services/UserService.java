@@ -98,6 +98,17 @@ public class UserService {
                 );
     }
 
+    public boolean confirmPassword(String password) {
+        Optional<String> username = SecurityUtils.getCurrentUserUsername();
+
+        if (username.isPresent()) {
+
+            Optional<User> user = userRepository.findByUsername(username.get());
+            String currentEncryptedPassword = user.get().getPassword();
+            return passwordEncoder.matches(password, currentEncryptedPassword);
+        }
+        return false;
+    }
 
     public User registerUser(UserCreateDTO userCreateDTO) {
         userRepository
@@ -184,6 +195,7 @@ public class UserService {
         userRepository.flush();
         return true;
     }
+
     /**
      * Not activated users should be automatically deleted after 3 days.
      * <p>
@@ -201,7 +213,6 @@ public class UserService {
                         }
                 );
     }
-
 
 
     public List<UserDTO> getAllUsers() throws UserException {

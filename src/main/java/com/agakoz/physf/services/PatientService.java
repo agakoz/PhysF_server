@@ -12,6 +12,7 @@ import com.agakoz.physf.utils.ObjectMapperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -56,16 +57,19 @@ public class PatientService {
         patientRepository.delete(patientToDelete);
 
     }
-
+    @Transactional
     public void deleteAllPatientsFromCurrentUser() throws NoPatientsException, UserException {
         String currentUsername = SecurityUtils
                 .getCurrentUserUsername()
                 .orElseThrow(() -> new UserException("Current user login not found"));
-        List<Integer> patientIds = patientRepository.getIdsByUserId(currentUsername);
-        if (patientIds.isEmpty()) {
+        List<Patient> patientList = patientRepository.getPatientsFromUser(currentUsername);
+        System.out.println(patientList);
+        if (patientList.isEmpty()) {
             throw new NoPatientsException();
         }
-        patientRepository.deleteAllFromUser(currentUsername);
+        for(Patient p: patientList){
+           patientRepository.delete(p);
+        }
     }
 
     public List<PatientDTO> getAllPatientsFromCurrentUser() throws NoPatientsException, UserException {
@@ -73,11 +77,11 @@ public class PatientService {
                 .getCurrentUserUsername()
                 .orElseThrow(() -> new UserException("Current user login not found"));
         List<PatientDTO> patients = patientRepository.retrievePatientsDTOByUserId(currentUsername);
-        if (patients.isEmpty()) {
-            throw new NoPatientsException();
-        } else {
+//        if (patients.isEmpty()) {
+//            throw new NoPatientsException();
+//        } else {
             return patients;
-        }
+//        }
     }
 
     public PatientDTO getPatientByIdFromCurrentUser(int patientId) throws PatientWithIdNotExistsException, UserException {

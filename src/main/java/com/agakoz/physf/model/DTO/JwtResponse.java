@@ -18,18 +18,18 @@ public class JwtResponse {
     private String username;
     private String password;
     private String role;
-    String name;
-    String surname;
-    String company;
-    String address;
-    String city;
-    String licenceNumber;
-    String specializations;
-    String professionalTitle;
+    private String name;
+    private String surname;
+    private String company;
+    private String address;
+    private String city;
+    private String licenceNumber;
+    private String specializations;
+    private String professionalTitle;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @JsonFormat(pattern = "yyyy-MM-dd")
-    LocalDate birthDate;
-    String email;
+    private LocalDate birthDate;
+    private String email;
     private boolean activated = false;
     @Size(max = 20)
     @JsonIgnore
@@ -38,7 +38,6 @@ public class JwtResponse {
     @Size(max = 20)
     @JsonIgnore
     private String resetKey;
-
 
 
 }

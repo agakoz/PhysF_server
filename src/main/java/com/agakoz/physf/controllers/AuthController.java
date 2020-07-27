@@ -2,8 +2,8 @@ package com.agakoz.physf.controllers;
 
 import com.agakoz.physf.model.DTO.JwtResponse;
 import com.agakoz.physf.model.DTO.LoginRequest;
+import com.agakoz.physf.model.DTO.PasswordDTO;
 import com.agakoz.physf.model.DTO.UserCreateDTO;
-import com.agakoz.physf.model.DTO.UserDTO;
 import com.agakoz.physf.model.User;
 import com.agakoz.physf.security.JwtUtils;
 import com.agakoz.physf.security.UserDetailsServiceImpl;
@@ -13,7 +13,10 @@ import com.agakoz.physf.utils.ObjectMapperUtils;
 import lombok.SneakyThrows;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.*;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -21,8 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "http://localhost:4200")
 @Controller
@@ -46,7 +47,7 @@ public class AuthController {
     @Transactional(rollbackFor = Exception.class)
     @SneakyThrows
     public void registerAccount(@Valid @RequestBody UserCreateDTO userCreateDTO) {
-        System.out.println("rejestracja");
+//        System.out.println("rejestracja");
         System.out.println(userCreateDTO);
         User user = userService.registerUser(userCreateDTO);
         mailService.sendActivationEmail(user);
@@ -54,7 +55,6 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-        System.out.println("logowanie");
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
@@ -68,7 +68,7 @@ public class AuthController {
 
         JwtResponse jwtResponse = ObjectMapperUtils.map(userDetails, new JwtResponse());
         jwtResponse.setToken(jwt);
-        System.out.println(jwtResponse);
+//        System.out.println(jwtResponse);
         return ResponseEntity.ok(jwtResponse);
     }
 
@@ -85,4 +85,10 @@ public class AuthController {
         }
     }
 
+    @PostMapping("/confirmPassword")
+    public ResponseEntity<Object> checkPassword(@RequestBody PasswordDTO passwordDTO) {
+        String password = passwordDTO.getPassword();
+        boolean confirmed = userService.confirmPassword(password);
+        return new ResponseEntity<>(confirmed, HttpStatus.OK);
+    }
 }

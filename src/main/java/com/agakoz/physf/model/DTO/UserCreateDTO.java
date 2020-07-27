@@ -28,12 +28,8 @@ public class UserCreateDTO {
     private String city;
     private String licenceNumber;
     private String specializations;
-//    String professionalTitle;
-
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @JsonFormat(pattern = "yyyy-MM-dd")
-//    @JsonSerialize(using = LocalDateSerializer.class)
-//    @JsonDeserialize(using = LocalDateDeserializer.class)
     private LocalDate birthDate;
     private String email;
 
