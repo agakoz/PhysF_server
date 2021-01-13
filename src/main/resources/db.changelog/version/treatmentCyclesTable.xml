@@ -1,0 +1,38 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet id="3" author="agakoz">
+        <createTable tableName="treatment_cycles">
+            <column name="id" type="int" generationType="identity" autoIncrement="true" />
+            <column name="user_id" type="int"/>
+            <column name="patient_id" type="int"/>
+            <column name="title" type="varchar(255)"/>
+            <column name="description" type="varchar(255)"/>
+            <column name="body_part" type="varchar(255)"/>
+            <column name="injury_date" type="date"/>
+            <column name="symptoms" type="varchar(255)"/>
+            <column name="examination_desc" type="varchar(max)"/>
+            <column name="diagnosis" type="varchar(max)"/>
+            <column name="treatment" type="varchar(max)"/>
+            <column name="recommendations" type="varchar(max)"/>
+            <column name="notes" type="varchar(max)"/>
+            <column name="archival" type="boolean"/>
+
+        </createTable>
+
+        <addNotNullConstraint tableName="treatment_cycles" columnName="user_id" columnDataType="int"/>
+        <addNotNullConstraint tableName="treatment_cycles" columnName="patient_id" columnDataType="int"/>
+        <addNotNullConstraint tableName="treatment_cycles" columnName="id" columnDataType="int"/>
+
+
+        <addPrimaryKey tableName="treatment_cycles" columnNames="id"/>
+        <addForeignKeyConstraint baseTableName="treatment_cycles" baseColumnNames="user_id" constraintName="fk_visits_user"
+                                 referencedTableName="users" referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="treatment_cycles" baseColumnNames="patient_id" constraintName="fk_visits_patient"
+                                 referencedTableName="patients" referencedColumnNames="id"/>
+    </changeSet>
+</databaseChangeLog>

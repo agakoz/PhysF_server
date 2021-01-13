@@ -37,5 +37,5 @@ public interface PatientRepository extends JpaRepository<Patient, Integer> {
     List<Integer> getByIdAndCurrent(@Param("patientId") int patientId, @Param("username") String currentUsername);
 
     @Query("SELECT p FROM Patient p where  p.user.username = :username  ")
-    List<Patient> getPatientsFromUser(@Param("username") String currentUsername);
+    Optional<List<Patient>> getPatientsFromUser(@Param("username") String currentUsername);
 }

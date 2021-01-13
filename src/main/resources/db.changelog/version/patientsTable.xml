@@ -49,7 +49,6 @@
         <addForeignKeyConstraint baseTableName="patients" baseColumnNames="user_id" constraintName="fk_patients_user"
                                  referencedTableName="users" referencedColumnNames="id"/>
 
-        <addUniqueConstraint tableName="patients" columnNames="pesel"/>
 
     </changeSet>
 </databaseChangeLog>

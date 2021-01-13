@@ -7,7 +7,9 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NonNull;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
@@ -15,12 +17,8 @@ import java.time.LocalTime;
 
 @Data
 @AllArgsConstructor
-@RequiredArgsConstructor
-@NoArgsConstructor
-public class VisitPlanCreateUpdateDTO {
-
-    @NonNull
-    private int patientId;
+public class IncomingVisitDTO {
+    private int id;
 
     @NonNull
     @DateTimeFormat(pattern = "yyyy-MM-dd")
@@ -35,7 +33,7 @@ public class VisitPlanCreateUpdateDTO {
     @JsonSerialize(using = LocalTimeSerializer.class)
     @JsonDeserialize(using = LocalTimeDeserializer.class)
     @JsonProperty("startTime")
-    private  LocalTime startTime;
+    private LocalTime startTime;
 
     @DateTimeFormat(pattern = "HH:mm")
     @JsonFormat(pattern = "HH:mm")
@@ -45,6 +43,12 @@ public class VisitPlanCreateUpdateDTO {
     @NonNull
     private LocalTime endTime;
 
-    private String title;
+    private int treatmentCycleId;
+
+    private String treatmentCycleTitle;
+
+    private String notes;
 
 }
+
+

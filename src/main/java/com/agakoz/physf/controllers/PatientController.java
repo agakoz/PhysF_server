@@ -1,12 +1,16 @@
 package com.agakoz.physf.controllers;
 
+import com.agakoz.physf.model.DTO.IncomingVisitDTO;
 import com.agakoz.physf.model.DTO.PatientCreateOrUpdateDTO;
 import com.agakoz.physf.model.DTO.PatientDTO;
+import com.agakoz.physf.model.DTO.FirstVisitPlanDTO;
 import com.agakoz.physf.services.PatientService;
+import com.agakoz.physf.services.VisitService;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,10 +20,12 @@ import java.util.List;
 @RequestMapping("/patient")
 public class PatientController {
     private final PatientService patientService;
+    private final VisitService visitService;
 
     @Autowired
-    public PatientController(PatientService patientService) {
+    public PatientController(PatientService patientService, VisitService visitService) {
         this.patientService = patientService;
+        this.visitService = visitService;
     }
 
     @GetMapping("/all")
@@ -42,13 +48,13 @@ public class PatientController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Object> addPatient(PatientCreateOrUpdateDTO patient) {
-        try {
-            patientService.addPatient(patient);
-            return new ResponseEntity<>(patient, HttpStatus.CREATED);
-        } catch (Exception ex) {
-            return new ResponseEntity<>(String.format("Error! %s", ex.getMessage()), HttpStatus.NOT_FOUND);
-        }
+    @SneakyThrows
+    @Transactional
+    public ResponseEntity<Object> addPatient(@RequestBody PatientCreateOrUpdateDTO patient) {
+        System.out.println("adding patient controller");
+        patientService.addPatient(patient);
+        return new ResponseEntity<>(patient, HttpStatus.CREATED);
+
     }
 
     @DeleteMapping("/delete/{id}")
@@ -56,6 +62,18 @@ public class PatientController {
         try {
 
             patientService.deletePatient(id);
+            return new ResponseEntity<>("User deleted successfully", HttpStatus.OK);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(String.format("Error! %s", ex.getMessage()), HttpStatus.NOT_FOUND);
+
+        }
+    }
+
+    @PostMapping("/delete")
+    public ResponseEntity<String> deletePatientById(@RequestBody List<Integer> ids) {
+        try {
+            System.out.println(ids);
+            patientService.deletePatients(ids);
             return new ResponseEntity<>("User deleted successfully", HttpStatus.OK);
         } catch (Exception ex) {
             return new ResponseEntity<>(String.format("Error! %s", ex.getMessage()), HttpStatus.NOT_FOUND);
@@ -72,19 +90,23 @@ public class PatientController {
 
     }
 
-    @PutMapping("update/{id}")
-    ResponseEntity<String> updatePatient(@PathVariable int id, PatientCreateOrUpdateDTO patient) {
-        try {
+    @PostMapping("/update/{id}")
+    @SneakyThrows
+    ResponseEntity<PatientCreateOrUpdateDTO> updatePatient(@PathVariable int id, @RequestBody PatientCreateOrUpdateDTO patient) {
+//        try {
+        PatientCreateOrUpdateDTO updatedPatient = patientService.updatePatient(id, patient);
+        return ResponseEntity.ok(updatedPatient);
+//        } catch (Exception ex) {
+//            return new ResponseEntity<>(String.format("Error! %s", ex.getMessage()), HttpStatus.NOT_FOUND);
+//        }
+    }
 
-            patientService.updatePatient(id, patient);
-            return new ResponseEntity<>(
-                    "patient updated successfully",
-                    HttpStatus.OK);
-        } catch (Exception ex) {
-            return new ResponseEntity<>(
-                    "Update failed! " + ex.getMessage(),
-                    HttpStatus.NOT_FOUND);
-        }
+    @GetMapping("/{patientId}/incomingVisits")
+    @SneakyThrows
+    public ResponseEntity<Object> getAllPatientFromCurrentUser(@PathVariable int patientId) {
+
+        List<IncomingVisitDTO> incomingVisits = visitService.getIncomingVisits(patientId);
+        return new ResponseEntity<>(incomingVisits, HttpStatus.OK);
     }
 
 }

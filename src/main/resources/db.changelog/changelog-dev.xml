@@ -7,6 +7,7 @@
 
     <include file="version/usersTable.xml" relativeToChangelogFile="true"/>
     <include file="version/patientsTable.xml" relativeToChangelogFile="true"/>
+    <include file="version/treatmentCyclesTable.xml" relativeToChangelogFile="true"/>
     <include file="version/visitTable.xml" relativeToChangelogFile="true"/>
     <include file="version/photosTable.xml" relativeToChangelogFile="true"/>
     <include file="version/questionGroupsTable.xml" relativeToChangelogFile="true"/>

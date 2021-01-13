@@ -17,11 +17,7 @@ import java.time.LocalTime;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @NoArgsConstructor
-public class VisitPlanCreateUpdateDTO {
-
-    @NonNull
-    private int patientId;
-
+public class FirstVisitPlanDTO {
     @NonNull
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @JsonFormat(pattern = "yyyy-MM-dd")
@@ -35,7 +31,7 @@ public class VisitPlanCreateUpdateDTO {
     @JsonSerialize(using = LocalTimeSerializer.class)
     @JsonDeserialize(using = LocalTimeDeserializer.class)
     @JsonProperty("startTime")
-    private  LocalTime startTime;
+    private LocalTime startTime;
 
     @DateTimeFormat(pattern = "HH:mm")
     @JsonFormat(pattern = "HH:mm")
@@ -45,6 +41,6 @@ public class VisitPlanCreateUpdateDTO {
     @NonNull
     private LocalTime endTime;
 
-    private String title;
+    private String notes;
 
 }

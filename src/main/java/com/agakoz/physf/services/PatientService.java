@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,9 +28,11 @@ public class PatientService {
         this.patientRepository = patientRepository;
         this.userRepository = userRepository;
     }
-//TODO patient validation
-    public void addPatient(PatientCreateOrUpdateDTO patientDTO) throws IllegalArgumentException {
 
+    //TODO patient validation
+    public void addPatient(PatientCreateOrUpdateDTO patientDTO) throws IllegalArgumentException {
+        System.out.println("adding patient");
+        System.out.println(patientDTO);
         checkPeselOrThrow(patientDTO.getPesel());
         Patient newPatient = ObjectMapperUtils.map(patientDTO, new Patient());
         String currentUsername = SecurityUtils
@@ -37,38 +40,46 @@ public class PatientService {
                 .orElseThrow(() -> new UserException("Current user login not found"));
         User currentUser = userRepository.findByUsername(currentUsername).get();
         newPatient.setUser(currentUser);
+
         patientRepository.save(newPatient);
 
     }
 
-    public void updatePatient(int patientId, PatientCreateOrUpdateDTO patientDTO) throws IllegalArgumentException {
+    public PatientCreateOrUpdateDTO updatePatient(int patientId, PatientCreateOrUpdateDTO patientDTO) throws IllegalArgumentException {
         patientExistsOrThrow(patientId);
         Patient oldPatient = getPatient(patientId);
         Patient updatedPatient = ObjectMapperUtils.map(patientDTO, oldPatient);
 
         checkPeselForExistingUserOrThrow(patientId, updatedPatient.getPesel());
         patientRepository.save(updatedPatient);
+        return patientDTO;
 
+    }
+
+    public void deletePatients(List<Integer> ids) throws PatientWithIdNotExistsException, UserException {
+        for (int id : ids) {
+            deletePatient(id);
+        }
     }
 
     public void deletePatient(int id) throws PatientWithIdNotExistsException, UserException {
         validatePatientIdForCurrentUser(id);
         Patient patientToDelete = getPatient(id);
         patientRepository.delete(patientToDelete);
-
     }
+
     @Transactional
     public void deleteAllPatientsFromCurrentUser() throws NoPatientsException, UserException {
         String currentUsername = SecurityUtils
                 .getCurrentUserUsername()
                 .orElseThrow(() -> new UserException("Current user login not found"));
-        List<Patient> patientList = patientRepository.getPatientsFromUser(currentUsername);
+        Optional<List<Patient>> patientList = patientRepository.getPatientsFromUser(currentUsername);
         System.out.println(patientList);
-        if (patientList.isEmpty()) {
+        if (!patientList.isPresent()) {
             throw new NoPatientsException();
         }
-        for(Patient p: patientList){
-           patientRepository.delete(p);
+        for (Patient p : patientList.get()) {
+            patientRepository.delete(p);
         }
     }
 
@@ -80,7 +91,7 @@ public class PatientService {
 //        if (patients.isEmpty()) {
 //            throw new NoPatientsException();
 //        } else {
-            return patients;
+        return patients;
 //        }
     }
 
@@ -96,12 +107,12 @@ public class PatientService {
         }
     }
 
-    private boolean patientExists(int id) {
+    public boolean patientExists(int id) {
         Optional<Patient> patient = patientRepository.findById(id);
         return patient.isPresent();
     }
 
-    private void patientExistsOrThrow(int id) throws PatientWithIdNotExistsException {
+    public void patientExistsOrThrow(int id) throws PatientWithIdNotExistsException {
         if (!patientExists(id))
             throw new PatientWithIdNotExistsException(id);
     }
@@ -113,16 +124,17 @@ public class PatientService {
     }
 
 
-    private void checkPeselOrThrow(String pesel) throws PeselIsNullException, BadLengthPeselException,PersonWithPeselAlreadyExistsException, UserException {
+    private void checkPeselOrThrow(String pesel) throws PeselIsNullException, BadLengthPeselException, PersonWithPeselAlreadyExistsException, UserException {
         if (pesel == null) throw new PeselIsNullException();
-        if (!isPeselUnique(pesel)) throw new PersonWithPeselAlreadyExistsException("User");
+        if (!isPeselUnique(pesel)) throw new PersonWithPeselAlreadyExistsException("Patient");
         if (!isPeselOfGoodLength(pesel)) throw new BadLengthPeselException();
     }
 
     private void checkPeselForExistingUserOrThrow(int patientId, String pesel) throws IllegalArgumentException, UserException {
         if (pesel == null) throw new PeselIsNullException();
-        if (!isPeselUnique(pesel, patientId)) throw new PersonWithPeselAlreadyExistsException("User");
         if (!isPeselOfGoodLength(pesel)) throw new BadLengthPeselException();
+        if (!isPeselUnique(pesel, patientId)) throw new PersonWithPeselAlreadyExistsException("User");
+
     }
 
     private boolean isPeselUnique(String pesel) throws UserException {
@@ -145,7 +157,8 @@ public class PatientService {
                     .orElseThrow(() -> new UserException("Current user login not found"));
             List<Integer> patientsWithTheSamePesel = patientRepository.findByPesel(pesel, currentUsername);
 
-            return patientsWithTheSamePesel.size() == 1 && patientsWithTheSamePesel.contains(patientId);
+            return (patientsWithTheSamePesel.size() == 1 && patientsWithTheSamePesel.contains(patientId)) || patientsWithTheSamePesel.size() == 0;
+
         }
         return false;
     }
@@ -163,6 +176,4 @@ public class PatientService {
         if (patients.size() == 0)
             throw new PatientWithIdNotExistsException(patientId);
     }
-
-
 }

@@ -55,6 +55,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+        System.out.println("logging");
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
@@ -68,7 +69,6 @@ public class AuthController {
 
         JwtResponse jwtResponse = ObjectMapperUtils.map(userDetails, new JwtResponse());
         jwtResponse.setToken(jwt);
-//        System.out.println(jwtResponse);
         return ResponseEntity.ok(jwtResponse);
     }
 

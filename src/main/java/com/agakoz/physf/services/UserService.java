@@ -27,7 +27,7 @@ import java.util.Optional;
 public class UserService {
     private final Logger log = LoggerFactory.getLogger(UserService.class);
 
-    private UserRepository userRepository;
+    private static UserRepository userRepository;
     private PasswordEncoder passwordEncoder;
     private IAuthenticationFacade authenticationFacade;
 
@@ -45,6 +45,19 @@ public class UserService {
                 .orElseThrow(() -> new UserException("Current user login not found"));
         CurrentUserDTO currentUserDTO = userRepository.retrieveCurrentUserAsDTOByUsername(currentUsername);
         return currentUserDTO;
+
+    }
+
+    public static User getCurrentUser() throws UserException {
+        String currentUsername = SecurityUtils
+                .getCurrentUserUsername()
+                .orElseThrow(() -> new UserException("Current user login not found"));
+        Optional<User> user = userRepository.findByUsername(currentUsername);
+        if (user.isPresent()) {
+            return user.get();
+        } else {
+            throw new UserException("Current user login not found");
+        }
 
     }
 
@@ -99,15 +112,19 @@ public class UserService {
     }
 
     public boolean confirmPassword(String password) {
+        System.out.println("confirming");
         Optional<String> username = SecurityUtils.getCurrentUserUsername();
-
         if (username.isPresent()) {
-
             Optional<User> user = userRepository.findByUsername(username.get());
+            if (!user.isPresent()) {
+                return false;
+            }
             String currentEncryptedPassword = user.get().getPassword();
             return passwordEncoder.matches(password, currentEncryptedPassword);
+        } else {
+            return false;
         }
-        return false;
+
     }
 
     public User registerUser(UserCreateDTO userCreateDTO) {
@@ -125,9 +142,7 @@ public class UserService {
                 .findOneByEmailIgnoreCase(userCreateDTO.getEmail())
                 .ifPresent(
                         existingUser -> {
-
                             throw new EmailAlreadyUsedException();
-
                         }
                 );
 

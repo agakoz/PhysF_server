@@ -24,8 +24,7 @@ public class UserCreateDTO {
     private String name;
     private String surname;
     private String company;
-    private String address;
-    private String city;
+    private String professionalTitle;
     private String licenceNumber;
     private String specializations;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
