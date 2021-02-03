@@ -1,6 +1,8 @@
 package com.agakoz.physf.repositories;
 
+import com.agakoz.physf.model.DTO.PatientBasicInfoDTO;
 import com.agakoz.physf.model.DTO.PatientDTO;
+import com.agakoz.physf.model.DTO.PatientPersonalData;
 import com.agakoz.physf.model.Patient;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -38,4 +40,15 @@ public interface PatientRepository extends JpaRepository<Patient, Integer> {
 
     @Query("SELECT p FROM Patient p where  p.user.username = :username  ")
     Optional<List<Patient>> getPatientsFromUser(@Param("username") String currentUsername);
+
+    @Query("SELECT new com.agakoz.physf.model.DTO.PatientBasicInfoDTO(p.id, p.name, p.surname, p.birthDate) FROM Patient p  WHERE p.user.username= :currentUsername" )
+    List<PatientBasicInfoDTO> retrievePatientsBasicInfoDTO(String currentUsername);
+
+    @Query("SELECT new com.agakoz.physf.model.DTO.PatientBasicInfoDTO(p.id, p.name, p.surname, p.birthDate) FROM Patient p  " +
+            "WHERE p.user.username= :currentUsername AND p.id = :patientId" )
+    Optional<PatientBasicInfoDTO> retrievePatientBasicInfoDTO(int patientId, String currentUsername);
+
+    @Query("SELECT new com.agakoz.physf.model.DTO.PatientPersonalData(p.name, p.surname, p.birthDate, p.pesel, p.sex) FROM Patient p  " +
+            "WHERE p.id = :patientId" )
+    PatientPersonalData retrievePatientPersonalDataById(int patientId);
 }

@@ -54,4 +54,6 @@ public class Visit {
     @Column
     private  String notes;
 
+    @Column
+    private boolean finished;
 }

@@ -17,7 +17,7 @@ import java.time.LocalTime;
 
 @Data
 @AllArgsConstructor
-public class IncomingVisitDTO {
+public class VisitPlanDTO {
     private int id;
 
     @NonNull
@@ -42,11 +42,9 @@ public class IncomingVisitDTO {
     @JsonProperty("endTime")
     @NonNull
     private LocalTime endTime;
-
     private int treatmentCycleId;
-
     private String treatmentCycleTitle;
-
+    private int patientId;
     private String notes;
 
 }

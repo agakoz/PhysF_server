@@ -1,7 +1,9 @@
 package com.agakoz.physf.services;
 
+import com.agakoz.physf.model.DTO.PatientBasicInfoDTO;
 import com.agakoz.physf.model.DTO.PatientCreateOrUpdateDTO;
 import com.agakoz.physf.model.DTO.PatientDTO;
+import com.agakoz.physf.model.DTO.PatientPersonalData;
 import com.agakoz.physf.model.Patient;
 import com.agakoz.physf.model.User;
 import com.agakoz.physf.repositories.PatientRepository;
@@ -30,7 +32,7 @@ public class PatientService {
     }
 
     //TODO patient validation
-    public void addPatient(PatientCreateOrUpdateDTO patientDTO) throws IllegalArgumentException {
+    public int addPatientAndGetId(PatientCreateOrUpdateDTO patientDTO) throws IllegalArgumentException {
         System.out.println("adding patient");
         System.out.println(patientDTO);
         checkPeselOrThrow(patientDTO.getPesel());
@@ -42,7 +44,7 @@ public class PatientService {
         newPatient.setUser(currentUser);
 
         patientRepository.save(newPatient);
-
+return newPatient.getId();
     }
 
     public PatientCreateOrUpdateDTO updatePatient(int patientId, PatientCreateOrUpdateDTO patientDTO) throws IllegalArgumentException {
@@ -88,11 +90,26 @@ public class PatientService {
                 .getCurrentUserUsername()
                 .orElseThrow(() -> new UserException("Current user login not found"));
         List<PatientDTO> patients = patientRepository.retrievePatientsDTOByUserId(currentUsername);
-//        if (patients.isEmpty()) {
-//            throw new NoPatientsException();
-//        } else {
         return patients;
-//        }
+    }
+
+    public PatientBasicInfoDTO getPatientBasicInfo(int patientId) {
+        String currentUsername = SecurityUtils
+                .getCurrentUserUsername()
+                .orElseThrow(() -> new UserException("Current user login not found"));
+        Optional<PatientBasicInfoDTO> patient = patientRepository.retrievePatientBasicInfoDTO(patientId, currentUsername);
+        if(patient.isEmpty()) {
+            throw new PatientWithIdNotExistsException(patientId);
+        }
+        return patient.get();
+    }
+
+    public List<PatientBasicInfoDTO> getAllPatientsBasicInfo() {
+        String currentUsername = SecurityUtils
+                .getCurrentUserUsername()
+                .orElseThrow(() -> new UserException("Current user login not found"));
+        List<PatientBasicInfoDTO> patients = patientRepository.retrievePatientsBasicInfoDTO(currentUsername);
+        return patients;
     }
 
     public PatientDTO getPatientByIdFromCurrentUser(int patientId) throws PatientWithIdNotExistsException, UserException {
@@ -175,5 +192,12 @@ public class PatientService {
         List<Integer> patients = patientRepository.getByIdAndCurrent(patientId, currentUsername);
         if (patients.size() == 0)
             throw new PatientWithIdNotExistsException(patientId);
+    }
+
+
+
+    public PatientPersonalData getPatientPersonalData(int patientId) {
+        patientExistsOrThrow(patientId);
+        return patientRepository.retrievePatientPersonalDataById(patientId);
     }
 }

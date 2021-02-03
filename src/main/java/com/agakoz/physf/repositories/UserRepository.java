@@ -32,8 +32,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query("SELECT new com.agakoz.physf.model.DTO.CurrentUserDTO(u.id, u.username, u.name, u.surname, u.company, u.address, u.city, u.licenceNumber, u.specializations, u.professionalTitle, u.birthDate, u.email, u.activated) FROM User u WHERE u.username=:username")
     CurrentUserDTO retrieveCurrentUserAsDTOByUsername(@Param("username") String username);
 
-    @Query("SELECT new com.agakoz.physf.model.DTO.CurrentUserPersonalDTO(u.name, u.surname, u.company, u.address, u.city, u.licenceNumber, u.specializations, u.professionalTitle, u.birthDate, u.email ) FROM User u WHERE u.id = :userId")
-    CurrentUserPersonalDTO retrieveUserPersonalAsDTOById(@Param("userId") int userId);
+    @Query("SELECT new com.agakoz.physf.model.DTO.CurrentUserPersonalDTO(u.name, u.surname, u.company, u.address, u.city, u.licenceNumber, u.specializations, u.professionalTitle, u.email ) FROM User u WHERE u.username = :username")
+    Optional<CurrentUserPersonalDTO> retrieveUserPersonalAsDTOById(@Param("username") String username);
 
 //    @Query("SELECT new com.agakoz.physf.model.DTO.CurrentUserAccountDTO(u.username, u.password ) FROM User u WHERE u.id = :userId")
 //    LoginRequest retrieveUserAccountAsDTOByUserId(@Param("userId") int userId);
@@ -48,4 +48,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     Optional<User> findOneByActivationKey(String activationKey);
 
     List<User> findAllByActivatedIsFalseAndActivationKeyIsNotNullAndCreatedDateBefore(Instant dateTime);
+
+
 }

@@ -13,5 +13,6 @@
     <include file="version/questionGroupsTable.xml" relativeToChangelogFile="true"/>
     <include file="version/questionsTable.xml" relativeToChangelogFile="true"/>
     <include file="version/answersTable.xml" relativeToChangelogFile="true"/>
-
+    <include file="version/changes/addColumnSimilarProblemsTreatmentCycle.xml" relativeToChangelogFile="true"/>
+    <include file="version/changes/addColumnFinishedTableVisit.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

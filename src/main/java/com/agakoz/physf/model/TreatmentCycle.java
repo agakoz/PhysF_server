@@ -31,17 +31,16 @@ public class TreatmentCycle {
     private String title;
     @Column
     private String description;
-    @Column
-    private String body_part;
-    @Column
+    @Column(name = "body_part")
+    private String bodyPart;
+    @Column(name = "injury_date")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @JsonFormat(pattern = "yyyy-MM-dd")
-    @JsonProperty("date")
-    private LocalDate injury_date;
+    private LocalDate injuryDate;
     @Column
     private String symptoms;
-    @Column
-    private String examination_desc;
+    @Column(name = "examination_desc")
+    private String examinationDesc;
     @Column
     private String diagnosis;
     @Column
@@ -52,5 +51,6 @@ public class TreatmentCycle {
     private String notes;
     @Column
     private boolean archival = false;
-
+    @Column(name = "similar_past_problems")
+    private String similarPastProblems;
 }

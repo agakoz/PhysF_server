@@ -38,6 +38,16 @@ public class UserService {
         this.authenticationFacade = iAuthenticationFacade;
     }
 
+    public CurrentUserPersonalDTO getCurrentUserPersonalDTO() {
+        String currentUsername = SecurityUtils
+                .getCurrentUserUsername()
+                .orElseThrow(() -> new UserException("Current user login not found"));
+        Optional<CurrentUserPersonalDTO> user = userRepository.retrieveUserPersonalAsDTOById(currentUsername);
+        if (user.isEmpty()) {
+            throw new UserException("Błąd użytkownika");
+        }
+        return user.get();
+    }
 
     public CurrentUserDTO getCurrentUserDTO() throws UserException {
         String currentUsername = SecurityUtils
@@ -280,4 +290,6 @@ public class UserService {
         return userRepository.findById(id).get();
 
     }
+
+
 }

@@ -1,6 +1,9 @@
 package com.agakoz.physf.controllers;
 
+import com.agakoz.physf.model.DTO.TreatmentCycleInfoDTO;
+import com.agakoz.physf.model.DTO.TreatmentCycleTitleBodyPartDTO;
 import com.agakoz.physf.model.DTO.TreatmentCycleTitleDTO;
+import com.agakoz.physf.model.DTO.VisitDateTimeInfo;
 import com.agakoz.physf.services.TreatmentCycleService;
 import com.agakoz.physf.services.VisitService;
 import lombok.SneakyThrows;
@@ -28,7 +31,33 @@ public class TreatmentCycleController {
     @GetMapping("/getAll/{patientId}")
     @SneakyThrows
     public ResponseEntity<Object> getAllFromPatient(@PathVariable int patientId) {
-        List<TreatmentCycleTitleDTO> treatmentCycleTitles = treatmentCycleService.getAllCyclesFromPatient(patientId);
+        List<TreatmentCycleTitleDTO> treatmentCycleTitles = treatmentCycleService.getStartedCyclesFromPatient(patientId);
         return new ResponseEntity<>(treatmentCycleTitles, HttpStatus.OK);
     }
+
+    @GetMapping("/getTreatmentCycleTitlesAndBodyParts/{patientId}")
+    @SneakyThrows
+    @ResponseBody
+    public List<TreatmentCycleTitleBodyPartDTO> getTreatmentCycleTitlesAndBodyParts(@PathVariable int patientId) {
+        List<TreatmentCycleTitleBodyPartDTO> treatmentCycles = treatmentCycleService.getTreatmentCycleTitlesAndBodyParts(patientId);
+        return treatmentCycles;
+    }
+
+    @GetMapping("/getCycleInfo/{treatmentCycleId}")
+    @ResponseBody
+    @SneakyThrows
+    public TreatmentCycleInfoDTO getTreatmentCycleInfo(@PathVariable int treatmentCycleId) {
+        TreatmentCycleInfoDTO treatmentCycleInfo = treatmentCycleService.getTreatmentCycleInfo(treatmentCycleId);
+        return treatmentCycleInfo;
+    }
+
+
+    @GetMapping("/getTreatmentCycleVisitsTimeInfo/{treatmentCycleId}")
+    @ResponseBody
+    @SneakyThrows
+    public List<VisitDateTimeInfo> getTreatmentCycleVisitTimeInfo(@PathVariable int treatmentCycleId) {
+        List<VisitDateTimeInfo> visits = treatmentCycleService.getTreatmentCycleFinishedVisitTimeInfo(treatmentCycleId);
+        return visits;
+    }
+
 }

@@ -8,6 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Map;
+
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/visit")
@@ -50,8 +53,54 @@ public class VisitsController {
                 String.format("Visit canceled successfully"),
                 HttpStatus.OK);
     }
+    @GetMapping("getCalendarEvents")
+    @SneakyThrows
+    @ResponseBody
+    public List<VisitCalendarEvent> getCalendarEvents() {
+        List<VisitCalendarEvent> events=  visitService.getCalendarEventsFromUser();
+        return events;
+    }
 
-//
+    @GetMapping("getFinishedVisit/{visitId}")
+    @SneakyThrows
+    @ResponseBody
+    public FinishedVisitDTO getFinishedVisit(@PathVariable int visitId) {
+        FinishedVisitDTO visit=  visitService.getFinishedVisitInfo(visitId);
+        return visit;
+    }
+
+    @GetMapping("incomingVisit/{visitId}")
+    @SneakyThrows
+    @ResponseBody
+    public VisitPlanDTO getAllPatientFromCurrentUser(@PathVariable int visitId) {
+        VisitPlanDTO incomingVisits = visitService.getIncomingVisit(visitId);
+        return incomingVisits;
+    }
+
+    @PostMapping("finishVisit")
+    @SneakyThrows
+    public ResponseEntity<Object> finishVisit(@RequestBody Map<String, Object> visitAndCycleData) {
+        visitService.finishVisit(visitAndCycleData);
+        return new ResponseEntity<>(
+                String.format("Visit canceled successfully"),
+                HttpStatus.OK);
+    }
+
+    @PostMapping("isVisitPlannedForGivenTime")
+    @SneakyThrows
+    public boolean isVisitPlannedForGivenTime(@RequestBody VisitDateTimeInfo visitDateTime) {
+       boolean isVisitPlanned = visitService.isVisitPlannedInGivenTime(visitDateTime);
+        return isVisitPlanned;
+    }
+
+    @GetMapping("finishedVisitsDataFromTreatmentCycle/{treatmentCycleId}")
+    @SneakyThrows
+    @ResponseBody
+    public List<FinishedVisitDTO> getAllFinishedVisitsDataFromTreatmentCycle(@PathVariable int treatmentCycleId) {
+        List<FinishedVisitDTO> visits = visitService.getAllFinishedVisitsDataFromTreatmentCycle(treatmentCycleId);
+        return visits;
+    }
+
 //    @GetMapping("/all")
 //    public ResponseEntity<Object> getAllVisits() {
 //        try {

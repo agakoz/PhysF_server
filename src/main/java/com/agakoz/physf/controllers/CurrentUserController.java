@@ -58,43 +58,38 @@ public class CurrentUserController {
         }
     }
 
-    @PutMapping("/update/personal")
-    ResponseEntity<String> updateUser(CurrentUserPersonalDTO userPersonalDTO) {
-        try {
+    @PostMapping("/update/personal")
+    @SneakyThrows
+    ResponseEntity<String> updateUser(@RequestBody CurrentUserPersonalDTO userPersonalDTO) {
+
             userService.updateCurrentUserPersonal(userPersonalDTO);
             return new ResponseEntity<>(
-                    "user personal info updated successfully",
+                    String.format("User updated successfully"),
                     HttpStatus.OK);
-        } catch (Exception ex) {
-            return new ResponseEntity<>(
-                    "Update failed! " + ex.getMessage(),
-                    HttpStatus.NOT_FOUND);
-        }
     }
 
     @GetMapping("/info")
     @SneakyThrows
     @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
     public CurrentUserDTO getCurrentUser() {
-//        try {
-//            System.out.println("info");
-            CurrentUserDTO user = userService.getCurrentUserDTO();
-            System.out.println(user);
-            return user;
-//            return new ResponseEntity<>(user, HttpStatus.OK);
-//        } catch (UserException ex) {
-//            return new ResponseEntity<>(
-//                    String.format("Error! %s", ex.getMessage()),
-//                    HttpStatus.NOT_FOUND);
-//
-//        }
+        CurrentUserDTO user = userService.getCurrentUserDTO();
+        System.out.println(user);
+        return user;
     }
 
 
+    @GetMapping("/personalData")
+    @SneakyThrows
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public CurrentUserPersonalDTO getCurrentUserPersonalData () {
+        CurrentUserPersonalDTO user = userService.getCurrentUserPersonalDTO();
+        return user;
+    }
 
-
-    @PostMapping(path = "/change-password")
-    public void changePassword(PasswordChangeDTO passwordChangeDto) {
+    @PostMapping(path = "/changePassword")
+    public void changePassword(@RequestBody PasswordChangeDTO passwordChangeDto) {
 //        if (!checkPasswordLength(passwordChangeDto.getNewPassword())) {
 //            throw new InvalidPasswordException();
 //        }

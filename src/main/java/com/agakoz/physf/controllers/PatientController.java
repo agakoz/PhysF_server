@@ -1,9 +1,6 @@
 package com.agakoz.physf.controllers;
 
-import com.agakoz.physf.model.DTO.IncomingVisitDTO;
-import com.agakoz.physf.model.DTO.PatientCreateOrUpdateDTO;
-import com.agakoz.physf.model.DTO.PatientDTO;
-import com.agakoz.physf.model.DTO.FirstVisitPlanDTO;
+import com.agakoz.physf.model.DTO.*;
 import com.agakoz.physf.services.PatientService;
 import com.agakoz.physf.services.VisitService;
 import lombok.SneakyThrows;
@@ -36,6 +33,22 @@ public class PatientController {
         return new ResponseEntity<>(patients, HttpStatus.OK);
     }
 
+    @GetMapping("/PatientsBasicInfo")
+    @SneakyThrows
+    @ResponseBody
+    public List<PatientBasicInfoDTO> getAllPatientsBasicInfoFromCurrentUser() {
+
+        List<PatientBasicInfoDTO> patients = patientService.getAllPatientsBasicInfo();
+        return patients;
+    }
+
+    @GetMapping("/PatientBasicInfo/{patientId}")
+    @SneakyThrows
+    @ResponseBody
+    public PatientBasicInfoDTO getPatientBasicInfo(@PathVariable int patientId) {
+        return  patientService.getPatientBasicInfo(patientId);
+    }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<Object> getPatientByIdFromCurrentUser(@PathVariable int id) {
@@ -52,8 +65,8 @@ public class PatientController {
     @Transactional
     public ResponseEntity<Object> addPatient(@RequestBody PatientCreateOrUpdateDTO patient) {
         System.out.println("adding patient controller");
-        patientService.addPatient(patient);
-        return new ResponseEntity<>(patient, HttpStatus.CREATED);
+        int patientId = patientService.addPatientAndGetId(patient);
+        return new ResponseEntity<>(patientId, HttpStatus.CREATED);
 
     }
 
@@ -103,10 +116,19 @@ public class PatientController {
 
     @GetMapping("/{patientId}/incomingVisits")
     @SneakyThrows
-    public ResponseEntity<Object> getAllPatientFromCurrentUser(@PathVariable int patientId) {
+    @ResponseBody
+    public List<VisitPlanDTO> getPatientIncomingVisits(@PathVariable int patientId) {
 
-        List<IncomingVisitDTO> incomingVisits = visitService.getIncomingVisits(patientId);
-        return new ResponseEntity<>(incomingVisits, HttpStatus.OK);
+        List<VisitPlanDTO> incomingVisits = visitService.getIncomingVisits(patientId);
+        return incomingVisits;
+    }
+
+    @GetMapping("/personalData/{patientId}")
+    @SneakyThrows
+    @ResponseBody
+    public PatientPersonalData getPatientPersonalData(@PathVariable int patientId) {
+        PatientPersonalData patient = patientService.getPatientPersonalData(patientId);
+        return patient;
     }
 
 }

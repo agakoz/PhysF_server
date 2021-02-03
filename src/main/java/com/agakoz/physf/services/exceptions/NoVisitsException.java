@@ -4,6 +4,6 @@ import java.io.IOException;
 
 public class NoVisitsException extends IOException {
     public NoVisitsException(){
-        super("No visits to show");
+        super("No such visit");
     }
 }
