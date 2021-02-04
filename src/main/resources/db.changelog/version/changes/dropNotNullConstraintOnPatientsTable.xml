@@ -1,0 +1,31 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet id="11" author="agakoz">
+        <dropNotNullConstraint
+                columnDataType="date"
+                columnName="birth_date"
+                tableName="patients"/>
+        <dropNotNullConstraint
+                columnDataType="varchar(12)"
+                columnName="pesel"
+                tableName="patients"/>
+        <dropNotNullConstraint
+                columnDataType="char(1)"
+                columnName="sex"
+                tableName="patients"/>
+        <dropNotNullConstraint
+                columnDataType="varchar(255)"
+                columnName="address"
+                tableName="patients"/>
+        <dropNotNullConstraint
+                columnDataType="varchar(50)"
+                columnName="city"
+                tableName="patients"/>
+
+    </changeSet>
+</databaseChangeLog>

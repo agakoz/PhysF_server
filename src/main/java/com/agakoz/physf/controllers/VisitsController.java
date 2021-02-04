@@ -36,6 +36,13 @@ public class VisitsController {
         return new ResponseEntity<>(visitId, HttpStatus.OK);
     }
 
+    @PostMapping("/planVisitForNewPatient")
+    @SneakyThrows
+    public ResponseEntity<Object> planVisitForNewPatient(@RequestBody Map<String, Object> visitPlan) {
+        int visitId = visitService.planVisitForNewPatient(visitPlan);
+        return new ResponseEntity<>(visitId, HttpStatus.OK);
+    }
+
     @PostMapping("cancel/{visitId}")
     @SneakyThrows
     public ResponseEntity<Object> cancelVisit(@PathVariable int visitId) {

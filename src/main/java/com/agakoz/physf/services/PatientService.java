@@ -200,4 +200,16 @@ return newPatient.getId();
         patientExistsOrThrow(patientId);
         return patientRepository.retrievePatientPersonalDataById(patientId);
     }
+
+    public int createNewPatientAndGetId(Object patient) {
+        Patient newPatient = new Patient();
+        newPatient = ObjectMapperUtils.map(patient, newPatient);
+        String currentUsername = SecurityUtils
+                .getCurrentUserUsername()
+                .orElseThrow(() -> new UserException("Current user login not found"));
+        User currentUser = userRepository.findByUsername(currentUsername).get();
+        newPatient.setUser(currentUser);
+        patientRepository.save(newPatient);
+        return newPatient.getId();
+    }
 }

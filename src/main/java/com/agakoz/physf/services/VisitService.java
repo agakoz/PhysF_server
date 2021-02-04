@@ -88,6 +88,8 @@ public class VisitService {
         return visit.getId();
     }
 
+
+
     private Visit createVisitFromPlan(FirstVisitPlanDTO firstVisitPlanDTO, TreatmentCycle treatmentCycle) {
         Visit visit = ObjectMapperUtils.map(firstVisitPlanDTO, new Visit());
         visit.setTreatmentCycle(treatmentCycle);
@@ -157,6 +159,20 @@ public class VisitService {
             throw new NoVisitsException();
         }
         return incomingVisits.get();
+    }
+
+    @Transactional(rollbackOn = Exception.class)
+    public int planVisitForNewPatient(Map<String, Object> visitPlan) {
+        int patientId = patientService.createNewPatientAndGetId(visitPlan.get("patient"));
+        TreatmentCycle treatmentCycle = createTreatmentCycle(patientId);
+        Visit newVisitPlan = new Visit();
+        Object visitPlanTime = visitPlan.get("visit");
+        newVisitPlan.setDate(getVisitDate(visitPlanTime));
+        newVisitPlan.setStartTime(getVisitStartTime(visitPlanTime));
+        newVisitPlan.setEndTime(getVisitEndTime(visitPlanTime));
+        newVisitPlan.setTreatmentCycle(treatmentCycle);
+        visitRepository.save(newVisitPlan);
+        return newVisitPlan.getId();
     }
 
     @Transactional(rollbackOn = Exception.class)
@@ -264,6 +280,7 @@ public class VisitService {
                 .orElseThrow(() -> new UserException("Current user login not found"));
         return visitRepository.retrieveAllFinishedVisitsAsDTOByTreatmentCycleId(currentUsername, treatmentCycleId);
     }
+
 
 
 //    public VisitWithPhotosDTO getById(int visitId) throws VisitNotExistsException {
