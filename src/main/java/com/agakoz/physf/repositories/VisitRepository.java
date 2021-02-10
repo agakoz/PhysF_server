@@ -37,7 +37,7 @@ public interface VisitRepository extends JpaRepository<Visit, Integer> {
             "FROM Visit v " +
             "JOIN TreatmentCycle c ON v.treatmentCycle.id = c.id " +
             "WHERE c.user.username = :username")
-    List<VisitCalendarEvent> retrieveVisitAsCalendarEvent(String username);
+    List<VisitCalendarEvent> retrieveAllVisitsAsCalendarEvent(String username);
 
     @Query("SELECT new com.agakoz.physf.model.DTO.VisitPlanDTO(v.id, v.date, v.startTime, v.endTime, v.treatmentCycle.id, v.treatmentCycle.title, c.patient.id, v.notes) " +
             "FROM Visit v " +
@@ -94,6 +94,15 @@ public interface VisitRepository extends JpaRepository<Visit, Integer> {
             "AND v.finished = true")
     List<FinishedVisitDTO> retrieveAllFinishedVisitsAsDTOByTreatmentCycleId(String currentUsername, int treatmentCycleId);
 
+    @Query("SELECT new com.agakoz.physf.model.DTO.VisitCalendarEvent(" +
+            "v.id, v.date, v.startTime, v.endTime, c.title, c.patient.id, c.patient.birthDate, c.patient.name, c.patient.surname, v.finished) " +
+            "FROM Visit v " +
+            "JOIN TreatmentCycle c ON v.treatmentCycle.id = c.id " +
+            "WHERE v.id = :visitId")
+    Optional<VisitCalendarEvent> retrieveVisitAsCalendarEvent(int visitId);
+
+    @Query("select max(v.id) from Visit v where v.treatmentCycle.user.username = :currentUsername")
+    int getLastVisit(String currentUsername);
 
 
 //        @Query("SELECT new com.agakoz.physf.model.DTO.VisitDTO(v.id, v.patient.id, v.date, v.startTime, v.endTime, v.title, v.symptoms, v.firstTime, v.diagnosis, v.recommendations," +

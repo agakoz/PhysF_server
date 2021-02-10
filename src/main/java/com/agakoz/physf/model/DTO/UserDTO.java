@@ -32,9 +32,6 @@ public class UserDTO {
     String licenceNumber;
     String specializations;
     String professionalTitle;
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    LocalDate birthDate;
     String email;
     private boolean activated = false;
     @Size(max = 20)

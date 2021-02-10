@@ -24,23 +24,26 @@ public class VisitsController {
 
     @PostMapping("/planFirstVisit/{patientId}")
     @SneakyThrows
-    public ResponseEntity<Object> planFirstVisitInNewCycle(@PathVariable int patientId, @RequestBody FirstVisitPlanDTO visitPlan) {
+    @ResponseBody
+    public int planFirstVisitInNewCycle(@PathVariable int patientId, @RequestBody FirstVisitPlanDTO visitPlan) {
         int visitId = visitService.planFirstVisit(visitPlan, patientId);
-        return new ResponseEntity<>(visitId, HttpStatus.OK);
+        return visitId;
     }
 
     @PostMapping("/planNextVisit")
     @SneakyThrows
-    public ResponseEntity<Object> planNextVisit(@RequestBody VisitPlanWithTreatmentCycleDTO visitPlan) {
+    @ResponseBody
+    public int planNextVisit(@RequestBody VisitPlanWithTreatmentCycleDTO visitPlan) {
         int visitId = visitService.planNextVisit(visitPlan);
-        return new ResponseEntity<>(visitId, HttpStatus.OK);
+        return visitId;
     }
 
     @PostMapping("/planVisitForNewPatient")
     @SneakyThrows
-    public ResponseEntity<Object> planVisitForNewPatient(@RequestBody Map<String, Object> visitPlan) {
+    @ResponseBody
+    public int planVisitForNewPatient(@RequestBody Map<String, Object> visitPlan) {
         int visitId = visitService.planVisitForNewPatient(visitPlan);
-        return new ResponseEntity<>(visitId, HttpStatus.OK);
+        return visitId;
     }
 
     @PostMapping("cancel/{visitId}")
@@ -54,25 +57,33 @@ public class VisitsController {
 
     @PostMapping("updateVisitPlan/{visitId}")
     @SneakyThrows
-    public ResponseEntity<Object> updateVisitPlan(@PathVariable int visitId, @RequestBody VisitPlanWithTreatmentCycleDTO updatedVisitPlan) {
-        visitService.updateVisitPlan(visitId, updatedVisitPlan);
-        return new ResponseEntity<>(
-                String.format("Visit canceled successfully"),
-                HttpStatus.OK);
+    @ResponseBody
+    public int updateVisitPlan(@PathVariable int visitId, @RequestBody VisitPlanWithTreatmentCycleDTO updatedVisitPlan) {
+      int id =  visitService.updateVisitPlan(visitId, updatedVisitPlan);
+        return id;
     }
+
     @GetMapping("getCalendarEvents")
     @SneakyThrows
     @ResponseBody
     public List<VisitCalendarEvent> getCalendarEvents() {
-        List<VisitCalendarEvent> events=  visitService.getCalendarEventsFromUser();
+        List<VisitCalendarEvent> events = visitService.getCalendarEventsFromUser();
         return events;
+    }
+
+    @GetMapping("getCalendarEvent/{visitId}")
+    @SneakyThrows
+    @ResponseBody
+    public VisitCalendarEvent getCalendarEvent(@PathVariable int visitId) {
+        VisitCalendarEvent event = visitService.getCalendarEvent(visitId);
+        return event;
     }
 
     @GetMapping("getFinishedVisit/{visitId}")
     @SneakyThrows
     @ResponseBody
     public FinishedVisitDTO getFinishedVisit(@PathVariable int visitId) {
-        FinishedVisitDTO visit=  visitService.getFinishedVisitInfo(visitId);
+        FinishedVisitDTO visit = visitService.getFinishedVisitInfo(visitId);
         return visit;
     }
 
@@ -86,17 +97,16 @@ public class VisitsController {
 
     @PostMapping("finishVisit")
     @SneakyThrows
-    public ResponseEntity<Object> finishVisit(@RequestBody Map<String, Object> visitAndCycleData) {
-        visitService.finishVisit(visitAndCycleData);
-        return new ResponseEntity<>(
-                String.format("Visit canceled successfully"),
-                HttpStatus.OK);
+    @ResponseBody
+    public int finishVisit(@RequestBody Map<String, Object> visitAndCycleData) {
+        int visitId = visitService.finishVisit(visitAndCycleData);
+        return visitId;
     }
 
     @PostMapping("isVisitPlannedForGivenTime")
     @SneakyThrows
     public boolean isVisitPlannedForGivenTime(@RequestBody VisitDateTimeInfo visitDateTime) {
-       boolean isVisitPlanned = visitService.isVisitPlannedInGivenTime(visitDateTime);
+        boolean isVisitPlanned = visitService.isVisitPlannedInGivenTime(visitDateTime);
         return isVisitPlanned;
     }
 

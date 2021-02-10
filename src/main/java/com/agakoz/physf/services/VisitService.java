@@ -89,7 +89,6 @@ public class VisitService {
     }
 
 
-
     private Visit createVisitFromPlan(FirstVisitPlanDTO firstVisitPlanDTO, TreatmentCycle treatmentCycle) {
         Visit visit = ObjectMapperUtils.map(firstVisitPlanDTO, new Visit());
         visit.setTreatmentCycle(treatmentCycle);
@@ -118,7 +117,7 @@ public class VisitService {
     }
 
     @Transactional(rollbackOn = Exception.class)
-    public void updateVisitPlan(int visitId, VisitPlanWithTreatmentCycleDTO newVisitPlan) throws NoVisitsException {
+    public int updateVisitPlan(int visitId, VisitPlanWithTreatmentCycleDTO newVisitPlan) throws NoVisitsException {
         Optional<Visit> visitToUpdate = visitRepository.findById(visitId);
         if (visitToUpdate.isEmpty()) {
             throw new NoVisitsException();
@@ -134,7 +133,7 @@ public class VisitService {
         visitRepository.save(updatedVisitPlan);
         treatmentCycleService.deleteTreatmentCycleIfHasNoVisits(currentTreatmentCycle);
 
-
+        return updatedVisitPlan.getId();
     }
 
     private boolean visitPlanIsForNewTreatmentCycle(VisitPlanWithTreatmentCycleDTO newVisitPlan) {
@@ -146,8 +145,16 @@ public class VisitService {
         String currentUsername = SecurityUtils
                 .getCurrentUserUsername()
                 .orElseThrow(() -> new UserException("Current user login not found"));
-        List<VisitCalendarEvent> events = visitRepository.retrieveVisitAsCalendarEvent(currentUsername);
+        List<VisitCalendarEvent> events = visitRepository.retrieveAllVisitsAsCalendarEvent(currentUsername);
         return events;
+    }
+
+    public VisitCalendarEvent getCalendarEvent(int visitId) throws NoVisitsException {
+        Optional<VisitCalendarEvent> event = visitRepository.retrieveVisitAsCalendarEvent(visitId);
+        if (event.isEmpty()) {
+            throw new NoVisitsException();
+        }
+        return event.get();
     }
 
     public VisitPlanDTO getIncomingVisit(int visitId) throws NoVisitsException {
@@ -176,29 +183,35 @@ public class VisitService {
     }
 
     @Transactional(rollbackOn = Exception.class)
-    public void finishVisit(Map<String, Object> visitAndCycleData) throws NoVisitsException {
+    public int finishVisit(Map<String, Object> visitAndCycleData) throws NoVisitsException {
         Object visitDetails = visitAndCycleData.get("visit");
         Object treatmentCycleDetails = visitAndCycleData.get("treatmentCycle");
         int visitId = getVisitId(visitDetails);
         int treatmentCycleId = getVisitTreatmentCycleId(visitDetails);
         Optional<Visit> visitPlanOptional = visitRepository.findById(visitId);
         Visit visitPlan;
-        if(isVisitWithoutPlan(visitId)) {
+        if (isVisitWithoutPlan(visitId)) {
             visitPlan = new Visit();
+
         } else {
             if (visitPlanOptional.isEmpty()) {
                 throw new NoVisitsException();
-            }else if (visitPlanOptional.get().isFinished()) {
+            } else if (visitPlanOptional.get().isFinished()) {
                 throw new VisitAlreadyFinishedException("Nie można rozpocząć zakończonej wizyty");
             } else {
                 visitPlan = visitPlanOptional.get();
             }
         }
+
         Visit finishedVisit = ObjectMapperUtils.map(visitDetails, visitPlan);
+
         TreatmentCycle treatmentCycle;
         if (treatmentCycleId == -1) {
             treatmentCycle = createTreatmentCycle(getPatientId(visitDetails));
-            treatmentCycleService.deleteTreatmentCycleIfHasNoVisits(visitPlanOptional.get().getTreatmentCycle());
+            if(visitPlanOptional.isPresent()){
+                treatmentCycleService.deleteTreatmentCycleIfHasNoVisits(visitPlanOptional.get().getTreatmentCycle());
+            }
+
         } else {
             Optional<TreatmentCycle> treatmentCycleOptional = treatmentCycleRepository.findById(treatmentCycleId);
             if (treatmentCycleOptional.isEmpty()) {
@@ -215,11 +228,15 @@ public class VisitService {
         finishedVisit.setFinished(true);
         visitRepository.save(finishedVisit);
         treatmentCycleRepository.save(treatmentCycle);
-
+        String currentUsername = SecurityUtils
+                .getCurrentUserUsername()
+                .orElseThrow(() -> new UserException("Current user login not found"));
+        int finishedVisitId = visitRepository.getLastVisit(currentUsername);
+        return finishedVisitId;
     }
 
     private LocalTime getVisitEndTime(Object visitDetails) {
-        if(((LinkedHashMap) visitDetails).get("endTime") == null){
+        if (((LinkedHashMap) visitDetails).get("endTime") == null) {
             return null;
         }
         return LocalTime.parse((String) ((LinkedHashMap) visitDetails).get("endTime"), DateTimeFormatter.ofPattern("HH:mm"));
@@ -227,10 +244,10 @@ public class VisitService {
     }
 
     private LocalTime getVisitStartTime(Object visitDetails) {
-        if(((LinkedHashMap) visitDetails).get("startTime") == null){
+        if (((LinkedHashMap) visitDetails).get("startTime") == null) {
             return null;
         }
-    return LocalTime.parse((String) ((LinkedHashMap) visitDetails).get("startTime"), DateTimeFormatter.ofPattern("HH:mm"));
+        return LocalTime.parse((String) ((LinkedHashMap) visitDetails).get("startTime"), DateTimeFormatter.ofPattern("HH:mm"));
 
     }
 
@@ -239,14 +256,14 @@ public class VisitService {
     }
 
     private LocalDate getVisitDate(Object visitDetails) {
-        if(((LinkedHashMap) visitDetails).get("date") == null){
+        if (((LinkedHashMap) visitDetails).get("date") == null) {
             return null;
         }
         return LocalDate.parse((String) ((LinkedHashMap) visitDetails).get("date"), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     }
 
     private LocalDate getTreatmentCycleDate(Object treatmentCycleDetails) {
-        if(((LinkedHashMap) treatmentCycleDetails).get("injuryDate") == null){
+        if (((LinkedHashMap) treatmentCycleDetails).get("injuryDate") == null) {
             return null;
         }
         return LocalDate.parse((String) ((LinkedHashMap) treatmentCycleDetails).get("injuryDate"), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
@@ -262,6 +279,9 @@ public class VisitService {
     }
 
     private int getVisitTreatmentCycleId(Object visit) {
+        if (((LinkedHashMap) visit).get("treatmentCycleId") == null) {
+            return -1;
+        }
         return (int) ((LinkedHashMap) visit).get("treatmentCycleId");
     }
 
@@ -280,7 +300,6 @@ public class VisitService {
                 .orElseThrow(() -> new UserException("Current user login not found"));
         return visitRepository.retrieveAllFinishedVisitsAsDTOByTreatmentCycleId(currentUsername, treatmentCycleId);
     }
-
 
 
 //    public VisitWithPhotosDTO getById(int visitId) throws VisitNotExistsException {

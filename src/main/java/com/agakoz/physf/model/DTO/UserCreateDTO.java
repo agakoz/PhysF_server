@@ -27,9 +27,6 @@ public class UserCreateDTO {
     private String professionalTitle;
     private String licenceNumber;
     private String specializations;
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate birthDate;
     private String email;
 
 }

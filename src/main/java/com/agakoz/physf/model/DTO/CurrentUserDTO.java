@@ -25,9 +25,6 @@ public class CurrentUserDTO {
     private  String licenceNumber;
     private  String specializations;
     private  String professionalTitle;
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private   LocalDate birthDate;
     private   String email;
     private boolean activated;
 }

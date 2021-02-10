@@ -20,13 +20,9 @@ public class PatientCreateOrUpdateDTO {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthDate;
-    @NonNull
     private String pesel;
-    @NonNull
     private char sex;
-    @NonNull
     private String address;
-    @NonNull
     private String city;
     private String email;
     private String phone;
