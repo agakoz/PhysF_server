@@ -26,6 +26,7 @@ public interface TreatmentCycleRepository extends JpaRepository<TreatmentCycle, 
     List<Integer> findFirstVisitConnectedToCycle(int treatmentCycleId);
 
     @Query("SELECT new com.agakoz.physf.model.DTO.TreatmentCycleInfoDTO(" +
+            "c.id, " +
             "c.patient.id, " +
             "c.title, " +
             "c.description, " +

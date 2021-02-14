@@ -13,6 +13,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TreatmentCycleInfoDTO {
+    private int id;
     private int patientId;
     private String title;
     private String description;

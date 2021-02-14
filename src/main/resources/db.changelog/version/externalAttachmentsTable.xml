@@ -1,0 +1,30 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet id="13" author="agakoz">
+        <createTable tableName="external_attachments">
+            <column name="id" type="int"/>
+            <column name="treatment_cycle_id" type="int"/>
+            <column name="link" type="varchar(255)"/>
+            <column name="description" type="varchar(max)"/>
+            <column name="uploaded_file_id" type="int"/>
+
+        </createTable>
+
+        <addNotNullConstraint tableName="external_attachments" columnName="treatment_cycle_id" columnDataType="int"/>
+        <addNotNullConstraint tableName="external_attachments" columnName="id" columnDataType="int"/>
+
+        <addPrimaryKey tableName="external_attachments" columnNames="id"/>
+        <addForeignKeyConstraint baseTableName="external_attachments" baseColumnNames="uploaded_file_id"
+                                 constraintName="fk_file_attachment"
+                                 referencedTableName="uploaded_files" referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="external_attachments" baseColumnNames="treatment_cycle_id"
+                                 constraintName="fk_attachment_cycle"
+                                 referencedTableName="treatment_cycles" referencedColumnNames="id"/>
+
+    </changeSet>
+</databaseChangeLog>

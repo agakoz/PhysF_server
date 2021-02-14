@@ -1,0 +1,23 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet id="12" author="agakoz">
+        <createTable tableName="uploaded_files">
+            <column name="id" type="int"/>
+            <column name="data" type="varbinary(max)"/>
+            <column name="name" type="varchar(255)"/>
+            <column name="type" type="varchar(255)"/>
+        </createTable>
+
+        <addNotNullConstraint tableName="uploaded_files" columnName="id" columnDataType="int"/>
+        <addNotNullConstraint tableName="uploaded_files" columnName="data" columnDataType="varbinary(max)"/>
+        <addNotNullConstraint tableName="uploaded_files" columnName="name" columnDataType="varchar(255)"/>
+        <addNotNullConstraint tableName="uploaded_files" columnName="type" columnDataType="varchar(255)"/>
+        <addPrimaryKey tableName="uploaded_files" columnNames="id"/>
+
+    </changeSet>
+</databaseChangeLog>

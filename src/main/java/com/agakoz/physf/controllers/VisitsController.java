@@ -2,6 +2,7 @@ package com.agakoz.physf.controllers;
 
 import com.agakoz.physf.model.DTO.*;
 import com.agakoz.physf.services.VisitService;
+import com.google.gson.Gson;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -59,7 +60,7 @@ public class VisitsController {
     @SneakyThrows
     @ResponseBody
     public int updateVisitPlan(@PathVariable int visitId, @RequestBody VisitPlanWithTreatmentCycleDTO updatedVisitPlan) {
-      int id =  visitService.updateVisitPlan(visitId, updatedVisitPlan);
+        int id = visitService.updateVisitPlan(visitId, updatedVisitPlan);
         return id;
     }
 
@@ -95,12 +96,23 @@ public class VisitsController {
         return incomingVisits;
     }
 
-    @PostMapping("finishVisit")
+    @PostMapping(value = "finishVisit")
     @SneakyThrows
     @ResponseBody
-    public int finishVisit(@RequestBody Map<String, Object> visitAndCycleData) {
-        int visitId = visitService.finishVisit(visitAndCycleData);
+    public int finishVisit(@RequestBody FinishVisitWrapper visitWrapper) {
+        int visitId = visitService.finishVisit(visitWrapper);
         return visitId;
+    }
+
+
+    @PostMapping(value = "addAttachemnts")
+    @SneakyThrows
+    @ResponseBody
+    public int postattachemnt(@RequestBody Map<String, TreatmentCycleAttachmentDTO[]> list) {
+//        int visitId = visitService.finishVisit(visitAndCycleData);
+        Gson g = new Gson();
+        TreatmentCycleAttachmentDTO p = g.fromJson(list.get("attachments").toString(), TreatmentCycleAttachmentDTO.class);
+        return 1;
     }
 
     @PostMapping("isVisitPlannedForGivenTime")
@@ -118,6 +130,13 @@ public class VisitsController {
         return visits;
     }
 
+//    @PostMapping(value = "addAttacment", consumes = {"multipart/form-data"})
+//    @SneakyThrows
+//    @ResponseBody
+//    public int getAllFinishedVisitsDataFromTreatmentCycle(@ModelAttribute TreatmentCycleAttachmentDTO a) {
+//
+//        return 1;
+//    }
 //    @GetMapping("/all")
 //    public ResponseEntity<Object> getAllVisits() {
 //        try {

@@ -1,12 +1,8 @@
 package com.agakoz.physf.services;
 
+import com.agakoz.physf.model.*;
 import com.agakoz.physf.model.DTO.*;
-import com.agakoz.physf.model.Patient;
-import com.agakoz.physf.model.TreatmentCycle;
-import com.agakoz.physf.model.Visit;
-import com.agakoz.physf.repositories.PhotoRepository;
-import com.agakoz.physf.repositories.TreatmentCycleRepository;
-import com.agakoz.physf.repositories.VisitRepository;
+import com.agakoz.physf.repositories.*;
 import com.agakoz.physf.security.SecurityUtils;
 import com.agakoz.physf.services.exceptions.NoPatientsException;
 import com.agakoz.physf.services.exceptions.NoVisitsException;
@@ -17,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.nio.file.NoSuchFileException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -33,6 +30,8 @@ public class VisitService {
     private final PhotoRepository photoRepository;
     private final TreatmentCycleRepository treatmentCycleRepository;
     private final TreatmentCycleService treatmentCycleService;
+    private final ExternalAttachmentRepository externalAttachmentRepository;
+    private final FileRepository fileRepository;
 
     @Autowired
     public VisitService(
@@ -40,12 +39,14 @@ public class VisitService {
             PatientService patientService,
             PhotoRepository photoRepository,
             TreatmentCycleRepository treatmentCycleRepository,
-            TreatmentCycleService treatmentCycleService) {
+            TreatmentCycleService treatmentCycleService, ExternalAttachmentRepository externalAttachmentRepository, FileRepository fileRepository) {
         this.visitRepository = visitRepository;
         this.patientService = patientService;
         this.photoRepository = photoRepository;
         this.treatmentCycleRepository = treatmentCycleRepository;
         this.treatmentCycleService = treatmentCycleService;
+        this.externalAttachmentRepository = externalAttachmentRepository;
+        this.fileRepository = fileRepository;
     }
 
     public FinishedVisitDTO getFinishedVisitInfo(int visitId) throws NoVisitsException {
@@ -183,11 +184,80 @@ public class VisitService {
     }
 
     @Transactional(rollbackOn = Exception.class)
-    public int finishVisit(Map<String, Object> visitAndCycleData) throws NoVisitsException {
-        Object visitDetails = visitAndCycleData.get("visit");
-        Object treatmentCycleDetails = visitAndCycleData.get("treatmentCycle");
-        int visitId = getVisitId(visitDetails);
-        int treatmentCycleId = getVisitTreatmentCycleId(visitDetails);
+    public int finishVisit(FinishVisitWrapper detailsWrapper) throws NoVisitsException, NoSuchFileException {
+        VisitToFinishDTO visitDetails = detailsWrapper.getVisit();
+        TreatmentCycleInfoDTO treatmentCycleDetails = detailsWrapper.getTreatmentCycle();
+
+        if (visitDetails.getTreatmentCycleId() != treatmentCycleDetails.getId()) {
+            throw new IllegalArgumentException();
+        }
+        Visit finishedVisit = createFinishedVisitFromDetails(visitDetails);
+        TreatmentCycle treatmentCycle = getTreatmentCycle(treatmentCycleDetails);
+        List<TreatmentCycleAttachmentDTO> attachments = detailsWrapper.getAttachments();
+        finishedVisit.setTreatmentCycle(treatmentCycle);
+        visitRepository.save(finishedVisit);
+        treatmentCycleRepository.save(treatmentCycle);
+        for (TreatmentCycleAttachmentDTO a : attachments) {
+            assignAttachmentToTreatmentCycle(a, treatmentCycle);
+        }
+
+        String currentUsername = SecurityUtils
+                .getCurrentUserUsername()
+                .orElseThrow(() -> new UserException("Current user login not found"));
+        int finishedVisitId = visitRepository.getLastVisit(currentUsername);
+        return finishedVisitId;
+    }
+
+    private void assignAttachmentToTreatmentCycle(TreatmentCycleAttachmentDTO attachmentDetails, TreatmentCycle treatmentCycle) throws NoSuchFileException {
+        ExternalAttachment attachment;
+        if (attachmentDetails.getId() == -1) {
+            attachment = new ExternalAttachment();
+            attachment.setId(getIdForNewAttachment());
+        } else {
+            Optional<ExternalAttachment> retrievedAttachment = externalAttachmentRepository.findById(attachmentDetails.getId());
+            if (retrievedAttachment.isPresent()) {
+                attachment = retrievedAttachment.get();
+            } else {
+                throw new IllegalArgumentException();
+            }
+        }
+        attachment = ObjectMapperUtils.map(attachmentDetails, attachment);
+        if (attachmentDetails.getFileId() > -1) {
+            Optional<UploadedFile> uploadedFile = fileRepository.findById(attachmentDetails.getFileId());
+            if (uploadedFile.isEmpty()) {
+                throw new NoSuchFileException("");
+            } else {
+                attachment.setFile(uploadedFile.get());
+            }
+        }
+        attachment.setTreatmentCycle(treatmentCycle);
+        externalAttachmentRepository.save(attachment);
+    }
+
+    private int getIdForNewAttachment() {
+        Optional<Integer> idOpt = externalAttachmentRepository.getLastId();
+        return idOpt.map(integer -> integer + 1).orElse(0);
+    }
+
+    private TreatmentCycle getTreatmentCycle(TreatmentCycleInfoDTO treatmentCycleDetails) {
+        TreatmentCycle treatmentCycle;
+        int treatmentCycleId = treatmentCycleDetails.getId();
+        if (treatmentCycleId == -1) {
+            treatmentCycle = createTreatmentCycle(treatmentCycleDetails.getPatientId());
+
+        } else {
+            Optional<TreatmentCycle> treatmentCycleOptional = treatmentCycleRepository.findById(treatmentCycleId);
+            if (treatmentCycleOptional.isEmpty()) {
+                throw new IllegalArgumentException();
+            }
+            treatmentCycle = treatmentCycleOptional.get();
+        }
+        treatmentCycle = ObjectMapperUtils.map(treatmentCycleDetails, treatmentCycle);
+        return treatmentCycle;
+    }
+
+    private Visit createFinishedVisitFromDetails(VisitToFinishDTO visitDetails) throws NoVisitsException {
+        int visitId = visitDetails.getId();
         Optional<Visit> visitPlanOptional = visitRepository.findById(visitId);
         Visit visitPlan;
         if (isVisitWithoutPlan(visitId)) {
@@ -204,35 +274,8 @@ public class VisitService {
         }
 
         Visit finishedVisit = ObjectMapperUtils.map(visitDetails, visitPlan);
-
-        TreatmentCycle treatmentCycle;
-        if (treatmentCycleId == -1) {
-            treatmentCycle = createTreatmentCycle(getPatientId(visitDetails));
-            if(visitPlanOptional.isPresent()){
-                treatmentCycleService.deleteTreatmentCycleIfHasNoVisits(visitPlanOptional.get().getTreatmentCycle());
-            }
-
-        } else {
-            Optional<TreatmentCycle> treatmentCycleOptional = treatmentCycleRepository.findById(treatmentCycleId);
-            if (treatmentCycleOptional.isEmpty()) {
-                throw new IllegalArgumentException();
-            }
-            treatmentCycle = treatmentCycleOptional.get();
-        }
-        treatmentCycle = ObjectMapperUtils.map(treatmentCycleDetails, treatmentCycle);
-        treatmentCycle.setInjuryDate(getTreatmentCycleDate(treatmentCycleDetails));
-        finishedVisit.setDate(getVisitDate(visitDetails));
-        finishedVisit.setStartTime(getVisitStartTime(visitDetails));
-        finishedVisit.setEndTime(getVisitEndTime(visitDetails));
-        finishedVisit.setTreatmentCycle(treatmentCycle);
         finishedVisit.setFinished(true);
-        visitRepository.save(finishedVisit);
-        treatmentCycleRepository.save(treatmentCycle);
-        String currentUsername = SecurityUtils
-                .getCurrentUserUsername()
-                .orElseThrow(() -> new UserException("Current user login not found"));
-        int finishedVisitId = visitRepository.getLastVisit(currentUsername);
-        return finishedVisitId;
+        return finishedVisit;
     }
 
     private LocalTime getVisitEndTime(Object visitDetails) {
@@ -326,6 +369,7 @@ public class VisitService {
 //        patientService.validatePatientIdForCurrentUser(patientId);
 //        List<VisitDTO> visitList = visitRepository.retrieveVisitDTOsByUserIdPatientId(getCurrentUser().getId(), patientId);
 //        List<VisitWithPhotosDTO> visitsWithPhotos = getPhotosForVisitList(visitList);
+//        return visitsWithPhotos;
 //        return visitsWithPhotos;
 //    }
 //

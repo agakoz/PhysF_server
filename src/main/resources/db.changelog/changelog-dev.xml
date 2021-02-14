@@ -16,4 +16,6 @@
     <include file="version/changes/addColumnSimilarProblemsTreatmentCycle.xml" relativeToChangelogFile="true"/>
     <include file="version/changes/addColumnFinishedTableVisit.xml" relativeToChangelogFile="true"/>
     <include file="version/changes/dropNotNullConstraintOnPatientsTable.xml" relativeToChangelogFile="true"/>
+    <include file="version/uploadedFilesTable.xml" relativeToChangelogFile="true"/>
+    <include file="version/externalAttachmentsTable.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
