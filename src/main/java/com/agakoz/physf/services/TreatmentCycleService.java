@@ -1,10 +1,9 @@
 package com.agakoz.physf.services;
 
-import com.agakoz.physf.model.DTO.TreatmentCycleInfoDTO;
-import com.agakoz.physf.model.DTO.TreatmentCycleTitleBodyPartDTO;
-import com.agakoz.physf.model.DTO.TreatmentCycleTitleDTO;
-import com.agakoz.physf.model.DTO.VisitDateTimeInfo;
+import com.agakoz.physf.model.DTO.*;
+import com.agakoz.physf.model.ExternalAttachment;
 import com.agakoz.physf.model.TreatmentCycle;
+import com.agakoz.physf.repositories.ExternalAttachmentRepository;
 import com.agakoz.physf.repositories.TreatmentCycleRepository;
 import com.agakoz.physf.repositories.VisitRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,15 +15,17 @@ import java.util.Optional;
 @Service
 public class TreatmentCycleService {
 
-    TreatmentCycleRepository treatmentCycleRepository;
-    PatientService patientService;
-    VisitRepository visitRepository;
+    private final TreatmentCycleRepository treatmentCycleRepository;
+    private final  PatientService patientService;
+    private final VisitRepository visitRepository;
+    private final  ExternalAttachmentRepository attachmentRepository;
 
     @Autowired
-    public TreatmentCycleService(TreatmentCycleRepository treatmentCycleRepository, PatientService patientService, VisitRepository visitRepository) {
+    public TreatmentCycleService(TreatmentCycleRepository treatmentCycleRepository, PatientService patientService, VisitRepository visitRepository, ExternalAttachmentRepository attachmentRepository) {
         this.treatmentCycleRepository = treatmentCycleRepository;
         this.patientService = patientService;
         this.visitRepository = visitRepository;
+        this.attachmentRepository = attachmentRepository;
     }
 
     public List<TreatmentCycleTitleDTO> getStartedCyclesFromPatient(int patientId) {
@@ -59,5 +60,10 @@ public class TreatmentCycleService {
     public List<VisitDateTimeInfo> getTreatmentCycleFinishedVisitTimeInfo(int treatmentCycleId) {
         List<VisitDateTimeInfo> visits = visitRepository.findFinishedVisitDateTimeInfoByTreatmentCycleId(treatmentCycleId);
         return visits;
+    }
+
+    public List<TreatmentCycleAttachmentDTO> getAttachmentsAssignedToTreatmentCycle(int treatmentCycleId) {
+        List<TreatmentCycleAttachmentDTO> attachments = attachmentRepository.findAttachmentsAssignedToTreatmentCycle(treatmentCycleId);
+        return attachments;
     }
 }

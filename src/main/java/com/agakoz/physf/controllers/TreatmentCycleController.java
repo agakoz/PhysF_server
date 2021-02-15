@@ -1,9 +1,7 @@
 package com.agakoz.physf.controllers;
 
-import com.agakoz.physf.model.DTO.TreatmentCycleInfoDTO;
-import com.agakoz.physf.model.DTO.TreatmentCycleTitleBodyPartDTO;
-import com.agakoz.physf.model.DTO.TreatmentCycleTitleDTO;
-import com.agakoz.physf.model.DTO.VisitDateTimeInfo;
+import com.agakoz.physf.model.DTO.*;
+import com.agakoz.physf.model.ExternalAttachment;
 import com.agakoz.physf.services.TreatmentCycleService;
 import com.agakoz.physf.services.VisitService;
 import lombok.SneakyThrows;
@@ -58,6 +56,14 @@ public class TreatmentCycleController {
     public List<VisitDateTimeInfo> getTreatmentCycleVisitTimeInfo(@PathVariable int treatmentCycleId) {
         List<VisitDateTimeInfo> visits = treatmentCycleService.getTreatmentCycleFinishedVisitTimeInfo(treatmentCycleId);
         return visits;
+    }
+
+    @GetMapping("/{treatmentCycleId}/externalAttachments")
+    @ResponseBody
+    @SneakyThrows
+    public List<TreatmentCycleAttachmentDTO> getTreatmentCycleExternalAttachments(@PathVariable int treatmentCycleId) {
+        List<TreatmentCycleAttachmentDTO> attachments = treatmentCycleService.getAttachmentsAssignedToTreatmentCycle(treatmentCycleId);
+        return attachments;
     }
 
 }

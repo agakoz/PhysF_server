@@ -104,17 +104,6 @@ public class VisitsController {
         return visitId;
     }
 
-
-    @PostMapping(value = "addAttachemnts")
-    @SneakyThrows
-    @ResponseBody
-    public int postattachemnt(@RequestBody Map<String, TreatmentCycleAttachmentDTO[]> list) {
-//        int visitId = visitService.finishVisit(visitAndCycleData);
-        Gson g = new Gson();
-        TreatmentCycleAttachmentDTO p = g.fromJson(list.get("attachments").toString(), TreatmentCycleAttachmentDTO.class);
-        return 1;
-    }
-
     @PostMapping("isVisitPlannedForGivenTime")
     @SneakyThrows
     public boolean isVisitPlannedForGivenTime(@RequestBody VisitDateTimeInfo visitDateTime) {

@@ -198,7 +198,7 @@ public class VisitService {
         visitRepository.save(finishedVisit);
         treatmentCycleRepository.save(treatmentCycle);
         for (TreatmentCycleAttachmentDTO a : attachments) {
-            assignAttachmentToTreatmentCycle(a, treatmentCycle);
+            assignAttachmentToTreatmentCycleAndFile(a, treatmentCycle);
         }
 
         String currentUsername = SecurityUtils
@@ -208,7 +208,7 @@ public class VisitService {
         return finishedVisitId;
     }
 
-    private void assignAttachmentToTreatmentCycle(TreatmentCycleAttachmentDTO attachmentDetails, TreatmentCycle treatmentCycle) throws NoSuchFileException {
+    private void assignAttachmentToTreatmentCycleAndFile(TreatmentCycleAttachmentDTO attachmentDetails, TreatmentCycle treatmentCycle) throws NoSuchFileException {
         ExternalAttachment attachment;
         if (attachmentDetails.getId() == -1) {
             attachment = new ExternalAttachment();

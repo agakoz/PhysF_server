@@ -14,9 +14,18 @@ public class TreatmentCycleAttachmentDTO {
 
     private int id;
     private String description;
-    private String fileName;
     private String link;
     private int fileId;
+    private String fileName;
+
 //    private int treatmentCycleId;
 //    private
+
+    public TreatmentCycleAttachmentDTO(int id, String description, String link, int fileId, String fileName, String fileType) {
+        this.id = id;
+        this.description = description;
+        this.link = link;
+        this.fileId = fileId;
+        this.fileName = fileName + "." +fileType ;
+    }
 }
