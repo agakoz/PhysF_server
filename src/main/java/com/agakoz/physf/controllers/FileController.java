@@ -1,5 +1,6 @@
 package com.agakoz.physf.controllers;
 
+import com.agakoz.physf.model.DTO.FileDTO;
 import com.agakoz.physf.model.UploadedFile;
 import com.agakoz.physf.repositories.FileRepository;
 import com.agakoz.physf.security.FileService;
@@ -45,13 +46,14 @@ public class FileController {
     }
 
     //https://www.devglan.com/spring-boot/spring-boot-file-upload-download
-//    @GetMapping("/download/{fileId:.+}/db")
-//    public ResponseEntity downloadFromDB(@PathVariable int fileId) {
-//
-//        UploadedFile file = fileRepository.findById(fileId).get();
-//        return ResponseEntity.ok()
-//                .contentType(MediaType.parseMediaType(contentType))
-//                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
-//                .body(file.getData());
-//    }
+    @GetMapping("/download/{fileId}")
+    @ResponseBody
+    @SneakyThrows
+    public ResponseEntity<byte[]> downloadFromDB(@PathVariable int fileId) {
+        FileDTO file = fileService.prepareFile(fileId);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getName() + "." + file.getType() + "\""+"; filetype=\"" + file.getType() + "\"")
+                .body(file.getData());
+    }
 }

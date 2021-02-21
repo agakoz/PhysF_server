@@ -2,6 +2,7 @@ package com.agakoz.physf.controllers;
 
 import com.agakoz.physf.model.DTO.*;
 import com.agakoz.physf.model.ExternalAttachment;
+import com.agakoz.physf.services.ExternalAttachmentService;
 import com.agakoz.physf.services.TreatmentCycleService;
 import com.agakoz.physf.services.VisitService;
 import lombok.SneakyThrows;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
@@ -66,4 +68,24 @@ public class TreatmentCycleController {
         return attachments;
     }
 
+    @PostMapping("/{treatmentCycleId}/updateExternalAttachments")
+    @SneakyThrows
+    @ResponseBody
+    public ResponseEntity<Object> updateExternalAttachmentsForTreatmentCycle(@PathVariable int treatmentCycleId, @RequestBody TreatmentCycleAttachmentsWrapper attachments) {
+        treatmentCycleService.updateExternalAttachmentsForTreatmentCycle(treatmentCycleId, attachments);
+        return new ResponseEntity<>("success", HttpStatus.OK);
+    }
+
+//    @DeleteMapping("/{treatmentCycleId}/removeExternalAttachment/{attachmentId}")
+//    @ResponseStatus
+//    @SneakyThrows
+//    public ResponseEntity<Object> deleteAttachmentFromTreatmentCycle(@PathVariable int treatmentCycleId, @PathVariable int attachmentId) {
+//        boolean isRemoved = treatmentCycleService.deleteExternalAttachment(treatmentCycleId, attachmentId);
+//
+//        if (!isRemoved) {
+//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//        }
+//
+//        return new ResponseEntity<>(attachmentId, HttpStatus.OK);
+//    }
 }

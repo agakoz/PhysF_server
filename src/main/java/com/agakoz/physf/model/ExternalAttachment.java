@@ -25,7 +25,7 @@ public class ExternalAttachment {
     @NonNull
     private TreatmentCycle treatmentCycle;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.REMOVE, orphanRemoval = true)
     @JoinColumn(name = "uploaded_file_id", referencedColumnName = "id", nullable = true)
     private UploadedFile file;
 

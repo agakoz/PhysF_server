@@ -67,13 +67,12 @@ public interface VisitRepository extends JpaRepository<Visit, Integer> {
 
     @Query("SELECT CASE WHEN count(v)>0 then true else false end " +
                     "from Visit v " +
-                    "join TreatmentCycle tc on v.treatmentCycle.id = tc.id " +
                     "where v.id <> :visitId " +
                     "AND v.date = :date " +
                     "and ( :startTime Between v.startTime and v.endTime " +
                     "OR :endTime Between v.startTime and v.endTime " +
-                    "OR :startTime <= v.startTime and :endTime >= v.endTime " +
-                    "AND tc.user.username = :username)")
+                    "OR :startTime <= v.startTime and :endTime >= v.endTime) " +
+                    "AND v.treatmentCycle.user.username = :username")
     boolean isVisitPlannedForGivenDateAndTime(String username, int visitId, LocalDate date, LocalTime startTime, LocalTime endTime);
 
     @Query("SELECT new com.agakoz.physf.model.DTO.FinishedVisitDTO(" +
@@ -103,6 +102,7 @@ public interface VisitRepository extends JpaRepository<Visit, Integer> {
 
     @Query("select max(v.id) from Visit v where v.treatmentCycle.user.username = :currentUsername")
     int getLastVisit(String currentUsername);
+
 
 
 //        @Query("SELECT new com.agakoz.physf.model.DTO.VisitDTO(v.id, v.patient.id, v.date, v.startTime, v.endTime, v.title, v.symptoms, v.firstTime, v.diagnosis, v.recommendations," +
