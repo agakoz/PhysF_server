@@ -1,8 +1,8 @@
 package com.agakoz.physf.controllers;
 
 import com.agakoz.physf.model.DTO.*;
+import com.agakoz.physf.services.VisitAttachmentService;
 import com.agakoz.physf.services.VisitService;
-import com.google.gson.Gson;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,11 +16,13 @@ import java.util.Map;
 @RestController
 @RequestMapping("/visit")
 public class VisitsController {
-    private VisitService visitService;
+    private final VisitService visitService;
+    private final VisitAttachmentService visitAttachmentService;
 
     @Autowired
-    public VisitsController(VisitService visitService) {
+    public VisitsController(VisitService visitService, VisitAttachmentService visitAttachmentService) {
         this.visitService = visitService;
+        this.visitAttachmentService = visitAttachmentService;
     }
 
     @PostMapping("/planFirstVisit/{patientId}")
@@ -116,6 +118,14 @@ public class VisitsController {
     @ResponseBody
     public List<FinishedVisitDTO> getAllFinishedVisitsDataFromTreatmentCycle(@PathVariable int treatmentCycleId) {
         List<FinishedVisitDTO> visits = visitService.getAllFinishedVisitsDataFromTreatmentCycle(treatmentCycleId);
+        return visits;
+    }
+
+    @GetMapping("{visitId}/attachments")
+    @SneakyThrows
+    @ResponseBody
+    public List<VisitAttachmentDTO> getAttachmentsAssignedToVisit(@PathVariable int visitId) {
+        List<VisitAttachmentDTO> visits = visitAttachmentService.getAttachmentsAssignedToVisit(visitId);
         return visits;
     }
 

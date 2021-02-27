@@ -63,22 +63,22 @@ public class TreatmentCycleService {
         return visits;
     }
 
-    public List<TreatmentCycleAttachmentDTO> getAttachmentsAssignedToTreatmentCycle(int treatmentCycleId) {
-        List<TreatmentCycleAttachmentDTO> attachments = externalAttachmentService.getAttachmentsAssignedToTreatmentCycle(treatmentCycleId);
+    public List<ExternalAttachmentDTO> getAttachmentsAssignedToTreatmentCycle(int treatmentCycleId) {
+        List<ExternalAttachmentDTO> attachments = externalAttachmentService.getAttachmentsAssignedToTreatmentCycle(treatmentCycleId);
         return attachments;
     }
 
-    public void updateExternalAttachmentsForTreatmentCycle(int treatmentCycleId, TreatmentCycleAttachmentsWrapper attachments) throws TreatmentCycleException, NoSuchFileException {
-        Optional<TreatmentCycle> treatmentCycle = treatmentCycleRepository.findById(treatmentCycleId);
-        if (treatmentCycle.isEmpty()) {
-            throw new TreatmentCycleException("Wskazany cykl leczenia nie istnieje");
-        }
-        List<Integer> updatedAttachmentIds = attachments.getAttachments().stream().map(TreatmentCycleAttachmentDTO::getId).filter(id -> id > -1).collect(Collectors.toList());
-        externalAttachmentService.updateAssignedAttachmentsDeleteOld(treatmentCycleId, updatedAttachmentIds);
+    public void updateExternalAttachmentsForTreatmentCycle(int treatmentCycleId, ExternalAttachmentsWrapper attachments) throws TreatmentCycleException, NoSuchFileException {
+
+        List<Integer> updatedAttachmentIds = attachments.getAttachments()
+                .stream().map(ExternalAttachmentDTO::getId)
+                .filter(id -> id > -1)
+                .collect(Collectors.toList());
+        externalAttachmentService.removeOldAssignedAttachments(treatmentCycleId, updatedAttachmentIds);
 
         attachments.getAttachments().forEach(attachment -> {
             try {
-                externalAttachmentService.createOrUpdateAttachment(attachment, treatmentCycle.get());
+                externalAttachmentService.createOrUpdateAttachment(attachment, treatmentCycleId);
             } catch (NoSuchFileException e) {
                 e.printStackTrace();
             }

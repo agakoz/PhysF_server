@@ -1,11 +1,10 @@
 package com.agakoz.physf.services;
 
-import com.agakoz.physf.model.DTO.TreatmentCycleAttachmentDTO;
-import com.agakoz.physf.model.ExternalAttachment;
-import com.agakoz.physf.model.TreatmentCycle;
-import com.agakoz.physf.model.UploadedFile;
+import com.agakoz.physf.model.*;
+import com.agakoz.physf.model.DTO.ExternalAttachmentDTO;
 import com.agakoz.physf.repositories.ExternalAttachmentRepository;
 import com.agakoz.physf.repositories.FileRepository;
+import com.agakoz.physf.repositories.TreatmentCycleRepository;
 import com.agakoz.physf.security.FileService;
 import com.agakoz.physf.utils.ObjectMapperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,16 +21,23 @@ public class ExternalAttachmentService {
     private final ExternalAttachmentRepository externalAttachmentRepository;
     private final FileRepository fileRepository;
     private final FileService fileService;
+    private final TreatmentCycleRepository treatmentCycleRepository;
 
     @Autowired
-    public ExternalAttachmentService(ExternalAttachmentRepository externalAttachmentRepository, FileRepository fileRepository, FileService fileService) {
+    public ExternalAttachmentService(ExternalAttachmentRepository externalAttachmentRepository, FileRepository fileRepository, FileService fileService, TreatmentCycleRepository treatmentCycleRepository) {
         this.externalAttachmentRepository = externalAttachmentRepository;
         this.fileRepository = fileRepository;
         this.fileService = fileService;
+        this.treatmentCycleRepository = treatmentCycleRepository;
     }
 
-    public void createOrUpdateAttachment(TreatmentCycleAttachmentDTO attachmentDetails, TreatmentCycle treatmentCycle) throws NoSuchFileException {
+    public void createOrUpdateAttachment(ExternalAttachmentDTO attachmentDetails, int treatmentCycleId) throws NoSuchFileException {
         ExternalAttachment attachment;
+        Optional<TreatmentCycle> treatmentCycleOpt = treatmentCycleRepository.findById(treatmentCycleId);
+        if (treatmentCycleOpt.isEmpty()) {
+            throw new InternalError();
+        }
+        TreatmentCycle treatmentCycle = treatmentCycleOpt.get();
         if (attachmentDetails.getId() == -1) {
             attachment = new ExternalAttachment();
             attachment = ObjectMapperUtils.map(attachmentDetails, attachment);
@@ -65,8 +71,8 @@ public class ExternalAttachmentService {
         return idOpt.map(integer -> integer + 1).orElse(0);
     }
 
-    public List<TreatmentCycleAttachmentDTO> getAttachmentsAssignedToTreatmentCycle(int treatmentCycleId) {
-        List<TreatmentCycleAttachmentDTO> attachments = externalAttachmentRepository.findAttachmentsAssignedToTreatmentCycle(treatmentCycleId);
+    public List<ExternalAttachmentDTO> getAttachmentsAssignedToTreatmentCycle(int treatmentCycleId) {
+        List<ExternalAttachmentDTO> attachments = externalAttachmentRepository.findAttachmentsAssignedToTreatmentCycle(treatmentCycleId);
         attachments.forEach(attachment -> {
             if (attachment.getFileId() > -1)
                 attachment.setFileName(fileService.getFileNameWithType(attachment.getFileId()));
@@ -100,7 +106,7 @@ public class ExternalAttachmentService {
         }
     }
 
-    public void updateAssignedAttachmentsDeleteOld(int treatmentCycleId, List<Integer> updatedAttachmentIds) {
+    public void removeOldAssignedAttachments(int treatmentCycleId, List<Integer> updatedAttachmentIds) {
         List<Integer> assignedAttachments = getAttachmentIdsAssignedToTreatmentCycle(treatmentCycleId);
         List<Integer> attachmentsToDelete = new ArrayList<>(assignedAttachments);
         attachmentsToDelete.removeAll(updatedAttachmentIds);

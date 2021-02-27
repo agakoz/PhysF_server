@@ -18,4 +18,5 @@
     <include file="version/changes/dropNotNullConstraintOnPatientsTable.xml" relativeToChangelogFile="true"/>
     <include file="version/uploadedFilesTable.xml" relativeToChangelogFile="true"/>
     <include file="version/externalAttachmentsTable.xml" relativeToChangelogFile="true"/>
+    <include file="version/visitAttachmentsTable.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

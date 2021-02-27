@@ -11,7 +11,8 @@ import java.util.List;
 @NoArgsConstructor
 public class FinishVisitWrapper {
 
-    private List<TreatmentCycleAttachmentDTO> attachments;
+    private List<ExternalAttachmentDTO> externalAttachments;
+    private List<VisitAttachmentDTO> visitAttachments;
     private VisitToFinishDTO visit;
     private TreatmentCycleInfoDTO treatmentCycle;
 }

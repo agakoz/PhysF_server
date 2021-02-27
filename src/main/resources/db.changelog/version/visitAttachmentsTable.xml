@@ -1,0 +1,29 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet id="14" author="agakoz">
+        <createTable tableName="visit_attachments">
+            <column name="id" type="int"/>
+            <column name="visit_id" type="int"/>
+            <column name="description" type="varchar(max)"/>
+            <column name="uploaded_file_id" type="int"/>
+
+        </createTable>
+
+        <addNotNullConstraint tableName="visit_attachments" columnName="visit_id" columnDataType="int"/>
+        <addNotNullConstraint tableName="visit_attachments" columnName="id" columnDataType="int"/>
+
+        <addPrimaryKey tableName="visit_attachments" columnNames="id"/>
+        <addForeignKeyConstraint baseTableName="visit_attachments" baseColumnNames="uploaded_file_id"
+                                 constraintName="fk_file_visit"
+                                 referencedTableName="uploaded_files" referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="visit_attachments" baseColumnNames="visit_id"
+                                 constraintName="fk_attachment_visit"
+                                 referencedTableName="visits" referencedColumnNames="id"/>
+
+    </changeSet>
+</databaseChangeLog>

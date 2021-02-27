@@ -9,7 +9,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TreatmentCycleAttachmentsWrapper {
+public class ExternalAttachmentsWrapper {
 
-    private List<TreatmentCycleAttachmentDTO> attachments;
+    private List<ExternalAttachmentDTO> attachments;
 }

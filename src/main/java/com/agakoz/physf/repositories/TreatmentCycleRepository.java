@@ -49,4 +49,7 @@ public interface TreatmentCycleRepository extends JpaRepository<TreatmentCycle, 
             "AND c.title IS NOT NULL " +
             "AND c.archival <> true")
     List<TreatmentCycleTitleBodyPartDTO> findAllTreatmentCycleTitleAndBodyPartByPatientId(int patientId);
+
+    @Query("select max(tc.id) from TreatmentCycle tc where tc.user.username = :currentUsername")
+    int getLastTreatmentCycleId(String currentUsername);
 }

@@ -31,6 +31,7 @@ public class VisitService {
     private final ExternalAttachmentRepository externalAttachmentRepository;
     private final FileRepository fileRepository;
     private ExternalAttachmentService externalAttachmentService;
+    private VisitAttachmentService visitAttachmentService;
 
     @Autowired
     public VisitService(
@@ -38,7 +39,10 @@ public class VisitService {
             PatientService patientService,
             PhotoRepository photoRepository,
             TreatmentCycleRepository treatmentCycleRepository,
-            TreatmentCycleService treatmentCycleService, ExternalAttachmentRepository externalAttachmentRepository, FileRepository fileRepository, ExternalAttachmentService externalAttachmentService) {
+            TreatmentCycleService treatmentCycleService,
+            ExternalAttachmentRepository externalAttachmentRepository,
+            FileRepository fileRepository,
+            ExternalAttachmentService externalAttachmentService, VisitAttachmentService visitAttachmentService) {
         this.visitRepository = visitRepository;
         this.patientService = patientService;
         this.photoRepository = photoRepository;
@@ -47,6 +51,7 @@ public class VisitService {
         this.externalAttachmentRepository = externalAttachmentRepository;
         this.fileRepository = fileRepository;
         this.externalAttachmentService = externalAttachmentService;
+        this.visitAttachmentService = visitAttachmentService;
     }
 
     public FinishedVisitDTO getFinishedVisitInfo(int visitId) throws NoVisitsException {
@@ -193,67 +198,53 @@ public class VisitService {
 
     @Transactional(rollbackOn = Exception.class)
     public int finishVisit(FinishVisitWrapper detailsWrapper) throws NoVisitsException, NoSuchFileException {
+        String currentUsername = SecurityUtils
+                .getCurrentUserUsername()
+                .orElseThrow(() -> new UserException("Current user login not found"));
+
         VisitToFinishDTO visitDetails = detailsWrapper.getVisit();
         TreatmentCycleInfoDTO treatmentCycleDetails = detailsWrapper.getTreatmentCycle();
         if (visitDetails.getTreatmentCycleId() != treatmentCycleDetails.getId()) {
             throw new IllegalArgumentException();
         }
-        Visit finishedVisit = createFinishedVisitFromDetails(visitDetails);
-        TreatmentCycle treatmentCycle = getTreatmentCycle(treatmentCycleDetails);
-        List<TreatmentCycleAttachmentDTO> attachments = detailsWrapper.getAttachments();
-        List<Integer> updatedAttachmentIds = attachments.stream().map(TreatmentCycleAttachmentDTO::getId).filter(id -> id > -1).collect(Collectors.toList());
-        externalAttachmentService.updateAssignedAttachmentsDeleteOld(treatmentCycle.getId(), updatedAttachmentIds);
+        Visit finishedVisit = getFinishedVinishedVisitFromDetails(visitDetails);
+        TreatmentCycle treatmentCycle = getTreatmentCycleFromDetails(treatmentCycleDetails);
         finishedVisit.setTreatmentCycle(treatmentCycle);
         visitRepository.save(finishedVisit);
         treatmentCycleRepository.save(treatmentCycle);
-        for (TreatmentCycleAttachmentDTO a : attachments) {
-            externalAttachmentService.createOrUpdateAttachment(a, treatmentCycle);
+        int finishedVisitId = finishedVisit.getId() != -1 ? finishedVisit.getId() : visitRepository.getLastVisitId(currentUsername);
+        int treatmentCycleId = treatmentCycle.getId() != -1 ? treatmentCycle.getId() : treatmentCycleRepository.getLastTreatmentCycleId(currentUsername);
+//        int visitId
+        List<VisitAttachmentDTO> visitAttachments = detailsWrapper.getVisitAttachments();
+        if (visitAttachments != null) {
+            for (VisitAttachmentDTO visitAttachment : visitAttachments) {
+                visitAttachmentService.createOrUpdateAttachment(visitAttachment, finishedVisitId);
+            }
+        }
+        List<ExternalAttachmentDTO> externalAttachments = detailsWrapper.getExternalAttachments();
+        if (externalAttachments != null) {
+            List<Integer> updatedAttachmentIds = externalAttachments.stream().map(ExternalAttachmentDTO::getId).filter(id -> id > -1).collect(Collectors.toList());
+            externalAttachmentService.removeOldAssignedAttachments(treatmentCycle.getId(), updatedAttachmentIds);
+            for (ExternalAttachmentDTO a : externalAttachments) {
+                externalAttachmentService.createOrUpdateAttachment(a, treatmentCycleId);
+            }
         }
 
-        String currentUsername = SecurityUtils
-                .getCurrentUserUsername()
-                .orElseThrow(() -> new UserException("Current user login not found"));
-        int finishedVisitId = visitRepository.getLastVisit(currentUsername);
+
         return finishedVisitId;
     }
 
-//    private void createAttachmentAndAssignAttachmentToTreatmentCycleAndFile(TreatmentCycleAttachmentDTO attachmentDetails, TreatmentCycle treatmentCycle) throws NoSuchFileException {
-//        ExternalAttachment attachment;
-//        if (attachmentDetails.getId() == -1) {
-//            attachment = new ExternalAttachment();
-//            attachment = ObjectMapperUtils.map(attachmentDetails, attachment);
-//            attachment.setId(getIdForNewAttachment());
-//        } else {
-//            Optional<ExternalAttachment> retrievedAttachment = externalAttachmentRepository.findById(attachmentDetails.getId());
-//            if (retrievedAttachment.isPresent()) {
-//                attachment = retrievedAttachment.get();
-//                attachment = ObjectMapperUtils.map(attachmentDetails, attachment);
-//            } else {
-//                throw new IllegalArgumentException();
-//            }
-//        }
-//        if (attachmentDetails.getFileId() > -1) {
-//            Optional<UploadedFile> uploadedFile = fileRepository.findById(attachmentDetails.getFileId());
-//            if (uploadedFile.isEmpty()) {
-//                throw new NoSuchFileException("");
-//            } else {
-//                attachment.setFile(uploadedFile.get());
-//            }
-//        }
-//        attachment.setTreatmentCycle(treatmentCycle);
-//        externalAttachmentRepository.save(attachment);
-//    }
-
-//    private int getIdForNewAttachment() {
-//        Optional<Integer> idOpt = externalAttachmentRepository.getLastId();
-//        return idOpt.map(integer -> integer + 1).orElse(0);
-//    }
-
-    private TreatmentCycle getTreatmentCycle(TreatmentCycleInfoDTO treatmentCycleDetails) {
+    private TreatmentCycle getTreatmentCycleFromDetails(TreatmentCycleInfoDTO treatmentCycleDetails) {
+        String currentUsername = SecurityUtils
+                .getCurrentUserUsername()
+                .orElseThrow(() -> new UserException("Current user login not found"));
         TreatmentCycle treatmentCycle;
         int treatmentCycleId = treatmentCycleDetails.getId();
         if (treatmentCycleId == -1) {
             treatmentCycle = createTreatmentCycle(treatmentCycleDetails.getPatientId());
+            int newId = treatmentCycle.getId();
+            treatmentCycle = ObjectMapperUtils.map(treatmentCycleDetails, treatmentCycle);
+            treatmentCycle.setId(newId);
 
         } else {
             Optional<TreatmentCycle> treatmentCycleOptional = treatmentCycleRepository.findById(treatmentCycleId);
@@ -261,12 +252,12 @@ public class VisitService {
                 throw new IllegalArgumentException();
             }
             treatmentCycle = treatmentCycleOptional.get();
+            treatmentCycle = ObjectMapperUtils.map(treatmentCycleDetails, treatmentCycle);
         }
-        treatmentCycle = ObjectMapperUtils.map(treatmentCycleDetails, treatmentCycle);
         return treatmentCycle;
     }
 
-    private Visit createFinishedVisitFromDetails(VisitToFinishDTO visitDetails) throws NoVisitsException {
+    private Visit getFinishedVinishedVisitFromDetails(VisitToFinishDTO visitDetails) throws NoVisitsException {
         int visitId = visitDetails.getId();
         Optional<Visit> visitPlanOptional = visitRepository.findById(visitId);
         Visit visitPlan;
@@ -354,6 +345,7 @@ public class VisitService {
                 .orElseThrow(() -> new UserException("Current user login not found"));
         return visitRepository.retrieveAllFinishedVisitsAsDTOByTreatmentCycleId(currentUsername, treatmentCycleId);
     }
+
 
 
 //    public VisitWithPhotosDTO getById(int visitId) throws VisitNotExistsException {

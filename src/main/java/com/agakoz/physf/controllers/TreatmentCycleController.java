@@ -1,8 +1,6 @@
 package com.agakoz.physf.controllers;
 
 import com.agakoz.physf.model.DTO.*;
-import com.agakoz.physf.model.ExternalAttachment;
-import com.agakoz.physf.services.ExternalAttachmentService;
 import com.agakoz.physf.services.TreatmentCycleService;
 import com.agakoz.physf.services.VisitService;
 import lombok.SneakyThrows;
@@ -12,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
@@ -63,15 +60,15 @@ public class TreatmentCycleController {
     @GetMapping("/{treatmentCycleId}/externalAttachments")
     @ResponseBody
     @SneakyThrows
-    public List<TreatmentCycleAttachmentDTO> getTreatmentCycleExternalAttachments(@PathVariable int treatmentCycleId) {
-        List<TreatmentCycleAttachmentDTO> attachments = treatmentCycleService.getAttachmentsAssignedToTreatmentCycle(treatmentCycleId);
+    public List<ExternalAttachmentDTO> getTreatmentCycleExternalAttachments(@PathVariable int treatmentCycleId) {
+        List<ExternalAttachmentDTO> attachments = treatmentCycleService.getAttachmentsAssignedToTreatmentCycle(treatmentCycleId);
         return attachments;
     }
 
     @PostMapping("/{treatmentCycleId}/updateExternalAttachments")
     @SneakyThrows
     @ResponseBody
-    public ResponseEntity<Object> updateExternalAttachmentsForTreatmentCycle(@PathVariable int treatmentCycleId, @RequestBody TreatmentCycleAttachmentsWrapper attachments) {
+    public ResponseEntity<Object> updateExternalAttachmentsForTreatmentCycle(@PathVariable int treatmentCycleId, @RequestBody ExternalAttachmentsWrapper attachments) {
         treatmentCycleService.updateExternalAttachmentsForTreatmentCycle(treatmentCycleId, attachments);
         return new ResponseEntity<>("success", HttpStatus.OK);
     }
